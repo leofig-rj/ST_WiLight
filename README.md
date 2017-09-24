@@ -1,5 +1,5 @@
 # ST_WiLight
-ST_WiLight is an SmartApp and Device Type Handles with works with your WiLights devices to create SmartThings devices.
+ST_WiLight is a SmartApp and Device Handles that works with your WiLights devices to create SmartThings devices.
 
 A project by Leonardo Figueiro (leoagfig@gmail.com)
 
