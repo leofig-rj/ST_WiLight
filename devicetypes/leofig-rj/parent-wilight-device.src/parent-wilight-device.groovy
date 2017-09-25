@@ -197,51 +197,51 @@ private void createChildDevice(String deviceName, String deviceNumber) {
         try {
         	def deviceHandlerName = ""
             switch (deviceName) {
-//         	    case "contact": 
-//                  deviceHandlerName = "Child Contact Sensor" 
-//                  break
-                 case "switch": 
+//                case "contact": 
+//                    deviceHandlerName = "Child Contact Sensor" 
+//                    break
+                case "switch": 
                     deviceHandlerName = "Child WiLght Switch" 
                     break
-//              case "dimmerSwitch": 
-//                  deviceHandlerName = "Child Dimmer Switch" 
-//                  break
-//              case "relaySwitch": 
-//                  deviceHandlerName = "Child Relay Switch" 
-//                  break
-//              case "temperature": 
-//                  deviceHandlerName = "Child Temperature Sensor" 
-//                  break
-//              case "humidity": 
-//                  deviceHandlerName = "Child Humidity Sensor" 
-//                  break
-//              case "motion": 
-//                  deviceHandlerName = "Child Motion Sensor" 
-//                  break
-//              case "water": 
-//                  deviceHandlerName = "Child Water Sensor" 
-//                  break
-//              case "illuminance": 
-//                  deviceHandlerName = "Child Illuminance Sensor" 
-//                  break
-//              case "illuminancergb": 
-//                  deviceHandlerName = "Child IlluminanceRGB Sensor" 
-//                  break
-//              case "voltage": 
-//                  deviceHandlerName = "Child Voltage Sensor" 
-//                  break
-//              case "smoke": 
-//                  deviceHandlerName = "Child Smoke Detector" 
-//                  break    
-//              case "carbonMonoxide": 
-//                  deviceHandlerName = "Child Carbon Monoxide Detector" 
-//                  break    
-//              case "alarm": 
-//                  deviceHandlerName = "Child Alarm" 
-//                  break    
-//              case "doorControl": 
-//                  deviceHandlerName = "Child Door Control" 
-//                  break
+//                case "dimmerSwitch": 
+//                    deviceHandlerName = "Child Dimmer Switch" 
+//                    break
+//                case "relaySwitch": 
+//                    deviceHandlerName = "Child Relay Switch" 
+//                    break
+//                case "temperature": 
+//                    deviceHandlerName = "Child Temperature Sensor" 
+//                    break
+//                case "humidity": 
+//                    deviceHandlerName = "Child Humidity Sensor" 
+//                    break
+//                case "motion": 
+//                    deviceHandlerName = "Child Motion Sensor" 
+//                    break
+//                case "water": 
+//                    deviceHandlerName = "Child Water Sensor" 
+//                    break
+//                case "illuminance": 
+//                    deviceHandlerName = "Child Illuminance Sensor" 
+//                    break
+//                case "illuminancergb": 
+//                    deviceHandlerName = "Child IlluminanceRGB Sensor" 
+//                    break
+//                case "voltage": 
+//                    deviceHandlerName = "Child Voltage Sensor" 
+//                    break
+//                case "smoke": 
+//                    deviceHandlerName = "Child Smoke Detector" 
+//                    break    
+//                case "carbonMonoxide": 
+//                    deviceHandlerName = "Child Carbon Monoxide Detector" 
+//                    break    
+//                case "alarm": 
+//                    deviceHandlerName = "Child Alarm" 
+//                    break    
+//                case "doorControl": 
+//                    deviceHandlerName = "Child Door Control" 
+//                    break
                 default: 
                     log.error "No Child Device Handler case for ${deviceName}"
       	    }
