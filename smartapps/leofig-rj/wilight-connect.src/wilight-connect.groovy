@@ -27,9 +27,8 @@ definition(
     iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png"
 )
 
-//*****
 preferences {
-	page(name: "mainPage")
+    page(name: "mainPage")
     page(name: "configurePDevice")
     page(name: "deletePDevice")
     page(name: "changeName")
@@ -64,7 +63,7 @@ def configurePDevice(params){
    }
    if (getChildDevice(state.currentDeviceId) != null) getChildDevice(state.currentDeviceId).configure()
    dynamicPage(name: "configurePDevice", title: "Configure WiLights created with this app", nextPage: null) {
-		section {
+        section {
             app.updateSetting("${state.currentDeviceId}_label", getChildDevice(state.currentDeviceId).label)
             input "${state.currentDeviceId}_label", "text", title:"Device Name", description: "", required: false
             href "changeName", title:"Change Device Name", description: "Edit the name above and click here to change it", params: [did: state.currentDeviceId]
@@ -83,7 +82,7 @@ def manuallyAdd(){
 			input "deviceType", "enum", title:"Device Type", description: "", required: false, options: ["Parent WiLight Device"]
 			input "ipAddress", "text", title:"IP Address", description: "", required: false 
 		}
-    }
+	}
 }
 
 def manuallyAddConfirm(){
@@ -100,15 +99,15 @@ def manuallyAddConfirm(){
        app.updateSetting("ipAddress", "")
             
        dynamicPage(name: "manuallyAddConfirm", title: "Manually add a WiLight", nextPage: "mainPage") {
-		   section {
+          section {
 			   paragraph "The device has been added. Press next to return to the main page."
-	    	}
+          }
        }
     } else {
         dynamicPage(name: "manuallyAddConfirm", title: "Manually add a WiLight", nextPage: "mainPage") {
-		    section {
-			    paragraph "The entered ip address is not valid. Please try again."
-		    }
+           section {
+               paragraph "The entered ip address is not valid. Please try again."
+           }
         }
     }
 }
@@ -122,14 +121,12 @@ def deletePDevice(params){
                 paragraph "The device has been deleted. Press next to continue"
             } 
         }
-    
 	} catch (e) {
         dynamicPage(name: "deletePDevice", title: "Deletion Summary", nextPage: "mainPage") {
             section {
                 paragraph "Error: ${(e as String).split(":")[1]}."
             } 
         }
-    
     }
 }
 
@@ -138,7 +135,7 @@ def changeName(params){
     thisDevice.label = settings["${state.currentDeviceId}_label"]
 
     dynamicPage(name: "changeName", title: "Change Name Summary", nextPage: "mainPage") {
-	    section {
+        section {
             paragraph "The device has been renamed. Press \"Next\" to continue"
         }
     }
@@ -160,11 +157,11 @@ def deviceDiscovery(params=[:])
 	def numFound = options.size() ?: 0
 
 	if ((numFound == 0 && state.deviceRefreshCount > 25) || params.reset == "true") {
-    	log.trace "Cleaning old device memory"
-    	state.devices = [:]
-        state.deviceRefreshCount = 0
-        app.updateSetting("selectedDevice", "")
-    }
+		log.trace "Cleaning old device memory"
+		state.devices = [:]
+		state.deviceRefreshCount = 0
+		app.updateSetting("selectedDevice", "")
+	}
 
 	ssdpSubscribe()
 
@@ -182,7 +179,7 @@ def deviceDiscovery(params=[:])
 		section("Please wait while we discover your WiLight devices. Discovery can take five minutes or more, so sit back and relax! Select your device below once discovered.") {
 			input "selectedDevices", "enum", required:false, title:"Select WiLight (${numFound} found)", multiple:true, options:options
 		}
-        section("Options") {
+		section("Options") {
 			href "deviceDiscovery", title:"Reset list of discovered devices", description:"", params: ["reset": "true"]
 		}
 	}
@@ -219,7 +216,7 @@ def isVirtualConfigured(did){
     def foundDevice = false
     getChildDevices().each {
        if(it.deviceNetworkId != null){
-       if(it.deviceNetworkId.startsWith("${did}/")) foundDevice = true
+           if(it.deviceNetworkId.startsWith("${did}/")) foundDevice = true
        }
     }
     return foundDevice
@@ -305,7 +302,7 @@ def getDevices() {
 void deviceDescriptionHandler(physicalgraph.device.HubResponse hubResponse) {
 	log.trace "wilight.xml response (application/xml)"
 	def body = hubResponse.xml
-    //log.debug body?.device?.friendlyName?.text()
+	//log.debug body?.device?.friendlyName?.text()
 	if (body?.device?.modelName?.text().startsWith("Parent WiLight Device")) {
 		def devices = getDevices()
 		def device = devices.find {it?.key?.contains(body?.device?.UDN?.text())}
@@ -382,7 +379,7 @@ private String convertIPtoHex(ipAddress) {
 
 private String convertPortToHex(port) {
 	String hexport = port.toString().format( '%04x', port.toInteger() )
-    return hexport
+	return hexport
 }
 
 
