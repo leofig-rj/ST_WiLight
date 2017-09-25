@@ -13,6 +13,9 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  */
+
+import groovy.json.JsonSlurper
+
 metadata {
 	definition (name: "Parent WiLight Device", namespace: "leofig-rj", author: "Leonardo Figueiro") {
 		capability "Configuration"
@@ -33,6 +36,61 @@ metadata {
 def parse(String description) {
 	log.debug "Parsing '${description}'"
 
+    def events = []
+    def descMap = parseDescriptionAsMap(description)
+    def body
+    def currentVal
+    def isDisplayed = true
+    def isPhysical = true
+    def name
+    def action
+    //log.debug "descMap: ${descMap}"
+
+    if (!state.mac || state.mac != descMap["mac"]) {
+		log.debug "Mac address of device found ${descMap["mac"]}"
+        updateDataValue("mac", descMap["mac"])
+	}
+    
+    if (state.mac != null && state.dni != state.mac) state.dni = setDeviceNetworkId(state.mac)
+    if (!device.currentValue("ip") || (device.currentValue("ip") != getDataValue("ip"))) sendEvent(name: 'ip', value: getDataValue("ip"))
+    
+    if (descMap["body"]) body = new String(descMap["body"].decodeBase64())
+
+    if (body && body != "") {
+    
+    	if(body.startsWith("{") || body.startsWith("[")) {
+   
+   			def slurper = new JsonSlurper()
+    		def jsonResult = slurper.parseText(body)
+			           
+            if (jsonResult.containsKey("lampada1")) {
+            	def value = jsonResult.lampada1
+    			if (value == "on") {
+    				//send an event if there is a state change
+        			if (device?.currentValue("lampada1") != "on") {
+                    	log.debug "parsing lampada1 on"
+        				sendEvent (name:"lampada1", value:"on", displayed: true, isStateChange: true, isPhysical: true)
+                    }
+    			}
+                if (value == "off") {
+    				//send an event if there is a state change
+        			if (device?.currentValue("lampada1") != "off") {
+                    	log.debug "parsing lampada1 off"
+        				sendEvent (name:"lampada1", value:"off", displayed: true, isStateChange: true, isPhysical: true)
+                    }
+    			}
+			}
+			if (jsonResult.containsKey("version")) {
+            	//log.debug "firmware version: $jsonResult.version"
+                if (device?.currentValue("firmware") != jsonResult.version) {
+                	//log.debug "updating firmware version"
+       				sendEvent(name:"firmware", value: jsonResult.version, displayed: false)
+                }
+    		}
+    	} else {
+        	//log.debug "Response is not JSON: $body"
+    	}
+  	}          
 }
 
 // handle commands
