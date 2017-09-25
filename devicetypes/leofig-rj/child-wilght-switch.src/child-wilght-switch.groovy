@@ -15,8 +15,8 @@
  */
 metadata {
 	definition (name: "Child WiLght Switch", namespace: "leofig-rj", author: "Leonardo Figueiro") {
-		capability "Actuator"
 		capability "Light"
+		capability "Actuator"
 		capability "Sensor"
 
 		attribute "lastUpdated", "String"
@@ -29,28 +29,35 @@ metadata {
 		// TODO: define status and reply messages here
 	}
 
-	tiles {
-		// TODO: define your main and details tiles here
+	tiles(scale: 2) {
+		multiAttributeTile(name:"switch", type: "lighting", width: 3, height: 4, canChangeIcon: true){
+			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
+				attributeState "off", label: '${name}', action: "switch.on", icon: "st.switches.switch.off", backgroundColor: "#ffffff", nextState:"turningOn"
+				attributeState "on", label: '${name}', action: "switch.off", icon: "st.switches.switch.on", backgroundColor: "#00A0DC", nextState:"turningOff"
+				attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.switches.switch.on", backgroundColor:"#00A0DC", nextState:"turningOff"
+				attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.switch.off", backgroundColor:"#ffffff", nextState:"turningOn"
+			}
+ 			tileAttribute("device.lastUpdated", key: "SECONDARY_CONTROL") {
+    				attributeState("default", label:'    Last updated ${currentValue}',icon: "st.Health & Wellness.health9")
+            }
+		}
 	}
 }
 
 // parse events into attributes
-def parse(String description) {
-	log.debug "Parsing '${description}'"
-	// TODO: handle 'switch' attribute
-	// TODO: handle 'lastUpdated, String' attribute
+//def parse(String description) {
+//	log.debug "Parsing '${description}'"
+//	// TODO: handle 'switch' attribute
+//	// TODO: handle 'lastUpdated, String' attribute
+//
+//}
 
+void on() {
+	parent.childOn(device.deviceNetworkId)
 }
 
-// handle commands
-def off() {
-	log.debug "Executing 'off'"
-	// TODO: handle 'off' command
-}
-
-def on() {
-	log.debug "Executing 'on'"
-	// TODO: handle 'on' command
+void off() {
+	parent.childOff(device.deviceNetworkId)
 }
 
 def generateEvent(String name, String value) {
