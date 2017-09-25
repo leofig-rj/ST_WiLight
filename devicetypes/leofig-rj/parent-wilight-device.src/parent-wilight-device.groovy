@@ -134,7 +134,7 @@ def parseChild(String nome, String value) {
             //If a child should exist, but doesn't yet, automatically add it!            
             if (isChild && childDevice == null) {
                 log.debug "isChild = true, but no child found - Auto Add it!"
-                //log.debug "    Need a ${namebase} with id = ${namenum}"
+                //log.debug "Need a ${namebase} with id = ${namenum}"
                     
                 createChildDevice(namebase, namenum)
                 //find child again, since it should now exist!    
@@ -142,8 +142,8 @@ def parseChild(String nome, String value) {
                     try{
                         //log.debug "Looking for child with deviceNetworkID = ${device.deviceNetworkId}-${name} against ${it.deviceNetworkId}"
                         if (it.deviceNetworkId == "${device.deviceNetworkId}-${name}") {
-                            childDevice = i    t
-                            //l    og.debug "Found a match!!!"
+                            childDevice = it
+                            //log.debug "Found a match!!!"
                         }    
                     }    
                     catch (e) {
@@ -154,9 +154,8 @@ def parseChild(String nome, String value) {
             
             if (childDevice != null) {
                 //log.debug "parse() found child device ${childDevice.deviceNetworkId}"
-                
                 childDevice.generateEvent(namebase, value)
-				log.debug "${childDevice.deviceNetworkId} - name: ${namebase}, value: ${value}"
+                log.debug "${childDevice.deviceNetworkId} - name: ${namebase}, value: ${value}"
                 
             }
             else  //must not be a child, perform normal update
@@ -165,7 +164,7 @@ def parseChild(String nome, String value) {
                 log.debug results
                 return results
             }
-		}
+        }
         catch (e) {
         	log.error "Error in parse() routine, error = ${e}"
         }
@@ -192,73 +191,71 @@ void childSetLevel(String dni, value) {
 
 private void createChildDevice(String deviceName, String deviceNumber) {
 
-    if ( device.deviceNetworkId =~ /^[A-Z0-9]{12}$/)
-    {
-		log.trace "createChildDevice:  Creating Child Device '${device.displayName} (${deviceName}${deviceNumber})'"
+    if ( device.deviceNetworkId =~ /^[A-Z0-9]{12}$/) {
+        log.trace "createChildDevice:  Creating Child Device '${device.displayName} (${deviceName}${deviceNumber})'"
 
-		try 
-        {
+        try {
         	def deviceHandlerName = ""
-        	switch (deviceName) {
-//         		case "contact": 
-//                	deviceHandlerName = "Child Contact Sensor" 
-//                	break
-         		case "switch": 
-                	deviceHandlerName = "Child WiLght Switch" 
-                	break
-//         		case "dimmerSwitch": 
-//                	deviceHandlerName = "Child Dimmer Switch" 
-//                	break
-//         		case "relaySwitch": 
-//                	deviceHandlerName = "Child Relay Switch" 
-//                	break
-//				case "temperature": 
-//                	deviceHandlerName = "Child Temperature Sensor" 
-//                	break
-//         		case "humidity": 
-//                	deviceHandlerName = "Child Humidity Sensor" 
-//                	break
-//         		case "motion": 
-//                	deviceHandlerName = "Child Motion Sensor" 
-//                	break
-//         		case "water": 
-//                	deviceHandlerName = "Child Water Sensor" 
-//                	break
-//         		case "illuminance": 
-//                	deviceHandlerName = "Child Illuminance Sensor" 
-//                	break
-//         		case "illuminancergb": 
-//                	deviceHandlerName = "Child IlluminanceRGB Sensor" 
-//                	break
-//				case "voltage": 
-//                	deviceHandlerName = "Child Voltage Sensor" 
-//                	break
-//				case "smoke": 
-//                	deviceHandlerName = "Child Smoke Detector" 
-//                	break    
-//				case "carbonMonoxide": 
-//                	deviceHandlerName = "Child Carbon Monoxide Detector" 
-//                	break    
-//         		case "alarm": 
-//                	deviceHandlerName = "Child Alarm" 
-//                	break    
-//         		case "doorControl": 
-//                	deviceHandlerName = "Child Door Control" 
-//                	break
-				default: 
-                	log.error "No Child Device Handler case for ${deviceName}"
-      		}
+            switch (deviceName) {
+//         	    case "contact": 
+//                  deviceHandlerName = "Child Contact Sensor" 
+//                  break
+         	    case "switch": 
+                    deviceHandlerName = "Child WiLght Switch" 
+                    break
+//              case "dimmerSwitch": 
+//                  deviceHandlerName = "Child Dimmer Switch" 
+//                  break
+//         	    case "relaySwitch": 
+//                  deviceHandlerName = "Child Relay Switch" 
+//                  break
+//			    case "temperature": 
+//                  deviceHandlerName = "Child Temperature Sensor" 
+//                  break
+//         	    case "humidity": 
+//                  deviceHandlerName = "Child Humidity Sensor" 
+//                  break
+//         	    case "motion": 
+//                  deviceHandlerName = "Child Motion Sensor" 
+//                  break
+//         	    case "water": 
+//                  deviceHandlerName = "Child Water Sensor" 
+//                  break
+//         	    case "illuminance": 
+//                  deviceHandlerName = "Child Illuminance Sensor" 
+//                  break
+//         	    case "illuminancergb": 
+//                  deviceHandlerName = "Child IlluminanceRGB Sensor" 
+//                  break
+//              case "voltage": 
+//                  deviceHandlerName = "Child Voltage Sensor" 
+//                  break
+//			    case "smoke": 
+//                  deviceHandlerName = "Child Smoke Detector" 
+//                  break    
+//			    case "carbonMonoxide": 
+//                  deviceHandlerName = "Child Carbon Monoxide Detector" 
+//                  break    
+//         	    case "alarm": 
+//                  deviceHandlerName = "Child Alarm" 
+//                  break    
+//         	    case "doorControl": 
+//                  deviceHandlerName = "Child Door Control" 
+//                  break
+                default: 
+                    log.error "No Child Device Handler case for ${deviceName}"
+      	    }
             if (deviceHandlerName != "") {
-				addChildDevice(deviceHandlerName, "${device.deviceNetworkId}-${deviceName}${deviceNumber}", null,
-		      		[completedSetup: true, label: "${device.displayName} (${deviceName}${deviceNumber})", 
-                	isComponent: false, componentName: "${deviceName}${deviceNumber}", componentLabel: "${deviceName} ${deviceNumber}"])
-        	}   
-    	} catch (e) {
-        	log.error "Child device creation failed with error = ${e}"
-        	state.alertMessage = "Child device creation failed. Please make sure that the '${deviceHandlerName}' is installed and published."
-	    	runIn(2, "sendAlert")
-    	}
-	} else 
+                addChildDevice(deviceHandlerName, "${device.deviceNetworkId}-${deviceName}${deviceNumber}", null,
+		      	    [completedSetup: true, label: "${device.displayName} (${deviceName}${deviceNumber})", 
+                    isComponent: false, componentName: "${deviceName}${deviceNumber}", componentLabel: "${deviceName} ${deviceNumber}"])
+            }   
+        } catch (e) {
+            log.error "Child device creation failed with error = ${e}"
+            state.alertMessage = "Child device creation failed. Please make sure that the '${deviceHandlerName}' is installed and published."
+    	    runIn(2, "sendAlert")
+        }
+    } else 
     {
         state.alertMessage = "WiLight Parent Device has not yet been fully configured. Click the 'Gear' icon, enter data for all fields, and click 'Done'"
         runIn(2, "sendAlert")
@@ -279,8 +276,8 @@ private boolean containsDigit(String s) {
     boolean containsDigit = false;
 
     if (s != null && !s.isEmpty()) {
-//		log.debug "containsDigit .matches = ${s.matches(".*\\d+.*")}"
-		containsDigit = s.matches(".*\\d+.*")
+//	    log.debug "containsDigit .matches = ${s.matches(".*\\d+.*")}"
+	    containsDigit = s.matches(".*\\d+.*")
     }
     return containsDigit
 }
@@ -293,8 +290,7 @@ def reset() {
 }
 
 def refresh() {
-	log.debug "refresh()"
-    
+    log.debug "refresh()"
     getAction("/status")
 }
 
@@ -304,7 +300,7 @@ def ping() {
 }
 
 def reboot() {
-	log.debug "reboot()"
+    log.debug "reboot()"
     def uri = "/reboot"
     getAction(uri)
 }
@@ -321,7 +317,7 @@ def sync(ip, port) {
     }
 }
 private encodeCredentials(username, password){
-	def userpassascii = "${username}:${password}"
+    def userpassascii = "${username}:${password}"
     def userpass = "Basic " + userpassascii.encodeAsBase64().toString()
     return userpass
 }
@@ -331,14 +327,14 @@ private getAction(uri){
   def userpass
   log.debug uri
   if(password != null && password != "") 
-    userpass = encodeCredentials("admin", password)
+      userpass = encodeCredentials("admin", password)
     
   def headers = getHeader(userpass)
 
   def hubAction = new physicalgraph.device.HubAction(
-    method: "GET",
-    path: uri,
-    headers: headers
+      method: "GET",
+      path: uri,
+      headers: headers
   )
   return hubAction    
 }
@@ -349,15 +345,15 @@ private postAction(uri, data){
   def userpass
   
   if(password != null && password != "") 
-    userpass = encodeCredentials("admin", password)
+      userpass = encodeCredentials("admin", password)
   
   def headers = getHeader(userpass)
   
   def hubAction = new physicalgraph.device.HubAction(
-    method: "POST",
-    path: uri,
-    headers: headers,
-    body: data
+      method: "POST",
+      path: uri,
+      headers: headers,
+      body: data
   )
   return hubAction    
 }
@@ -367,8 +363,8 @@ private setDeviceNetworkId(ip, port = null){
     if (port == null) {
         myDNI = ip
     } else {
-  	    def iphex = convertIPtoHex(ip)
-  	    def porthex = convertPortToHex(port)
+        def iphex = convertIPtoHex(ip)
+        def porthex = convertPortToHex(port)
         
         myDNI = "$iphex:$porthex"
     }
@@ -386,7 +382,7 @@ private getHostAddress() {
     if(getDeviceDataByName("ip") && getDeviceDataByName("port")){
         return "${getDeviceDataByName("ip")}:${getDeviceDataByName("port")}"
     }else{
-	    return "${ip}:80"
+        return "${ip}:80"
     }
 }
 
@@ -396,15 +392,15 @@ private String convertIPtoHex(ipAddress) {
 }
 
 private String convertPortToHex(port) {
-	String hexport = port.toString().format( '%04x', port.toInteger() )
+    String hexport = port.toString().format( '%04x', port.toInteger() )
     return hexport
 }
 
 def parseDescriptionAsMap(description) {
-	description.split(",").inject([:]) { map, param ->
-		def nameAndValue = param.split(":")
-		map += [(nameAndValue[0].trim()):nameAndValue[1].trim()]
-	}
+    description.split(",").inject([:]) { map, param ->
+        def nameAndValue = param.split(":")
+        map += [(nameAndValue[0].trim()):nameAndValue[1].trim()]
+    }
 }
 
 private getHeader(userpass = null){
@@ -417,17 +413,17 @@ private getHeader(userpass = null){
 }
 
 def toAscii(s){
-        StringBuilder sb = new StringBuilder();
-        String ascString = null;
-        long asciiInt;
-                for (int i = 0; i < s.length(); i++){
-                    sb.append((int)s.charAt(i));
-                    sb.append("|");
-                    char c = s.charAt(i);
-                }
-                ascString = sb.toString();
-                asciiInt = Long.parseLong(ascString);
-                return asciiInt;
+    StringBuilder sb = new StringBuilder();
+    String ascString = null;
+    long asciiInt;
+    for (int i = 0; i < s.length(); i++){
+        sb.append((int)s.charAt(i));
+        sb.append("|");
+        char c = s.charAt(i);
+    }
+    ascString = sb.toString();
+    asciiInt = Long.parseLong(ascString);
+    return asciiInt;
 }
 
 //def setProgram(value, program){
@@ -452,19 +448,19 @@ def update_needed_settings()
 
 // handle commands de AnyThing
 //def configure() {
-//	log.debug "Executing 'configure()'"
-//    updateDeviceNetworkID()
-//	sendEvent(name: "numberOfButtons", value: numButtons)
+//    log.debug     Executing 'configure()'"
+//    updateDevic    NetworkID()
+//    sendEvent(name: "numberOfButtons", value: numButtons)
 //}
 
 //def refresh() {
-//	log.debug "Executing 'refresh()'"
-//	sendEthernet("refresh")
-//	sendEvent(name: "numberOfButtons", value: numButtons)
+//    log.debug "Executing 'refresh()'"
+//    sendEthernet("refresh")
+//    sendEvent(name: "numberOfButtons", value: numButtons)
 //}
 
 //def installed() {
-//	log.debug "Executing 'installed()'"
+//    log.debug "Executing 'installed()'"
 //    if ( device.deviceNetworkId =~ /^[A-Z0-9]{12}$/)
 //    {
 //    }
@@ -476,38 +472,38 @@ def update_needed_settings()
 //}
 
 //def initialize() {
-//	log.debug "Executing 'initialize()'"
+//    log.debug "Executing 'initialize()'"
 //    sendEvent(name: "numberOfButtons", value: numButtons)
 //}
 
 //def updated() {
-//	if (!state.updatedLastRanAt || now() >= state.updatedLastRanAt + 5000) {
-//		state.updatedLastRanAt = now()
-//		log.debug "Executing 'updated()'"
-//    	runIn(3, "updateDeviceNetworkID")
-//		sendEvent(name: "numberOfButtons", value: numButtons)
+//    if (!state.updatedLastRanAt || now() >= state.updatedLastRanAt + 5000) {
+//        state.updatedLastRanAt = now()
+//        log.debug "Executing 'updated()'"
+//        runIn(3, "updateDeviceNetworkID")
+//        sendEvent(name: "numberOfButtons", value: numButtons)
 //        log.debug "Hub IP Address = ${device.hub.getDataValue("localIP")}"
 //        log.debug "Hub Port = ${device.hub.getDataValue("localSrvPortTCP")}"
-//	}
-//	else {
-////		log.trace "updated(): Ran within last 5 seconds so aborting."
-//	}
+//    }
+//    else {
+////        log.trace "updated(): Ran within last 5 seconds so aborting."
+//    }
 //}
 
 //def updateDeviceNetworkID() {
-//	log.debug "Executing 'updateDeviceNetworkID'"
+//    log.debug "Executing 'updateDeviceNetworkID'"
 //    if(device.deviceNetworkId!=mac) {
-//    	log.debug "setting deviceNetworkID = ${mac}"
+//        log.debug "setting deviceNetworkID = ${mac}"
 //        device.setDeviceNetworkId("${mac}")
-//	}
+//    }
 //    //Need deviceNetworkID updated BEFORE we can create Child Devices
-//	//Have the Arduino send an updated value for every device attached.  This will auto-created child devices!
-//	refresh()
+//    //Have the Arduino send an updated value for every device attached.  This will auto-created child devices!
+//    refresh()
 //}
 
 def installed() {
-	log.debug "installed()"
-	configure()
+    log.debug "installed()"
+    configure()
 }
 
 def configure() {
