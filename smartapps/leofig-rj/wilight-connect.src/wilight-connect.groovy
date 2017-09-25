@@ -41,7 +41,7 @@ preferences {
 }
 
 def mainPage() {
-	dynamicPage(name: "mainPage", title: "Manage your WiLights", nextPage: null, uninstall: true, install: true) {
+    dynamicPage(name: "mainPage", title: "Manage your WiLights", nextPage: null, uninstall: true, install: true) {
         section("Configure"){
            href "deviceDiscovery", title:"Discover Devices", description:""
            href "manuallyAdd", title:"Manually Add Device", description:""
@@ -77,11 +77,11 @@ def configurePDevice(params){
 }
 
 def manuallyAdd(){
-   dynamicPage(name: "manuallyAdd", title: "Manually add a WiLight", nextPage: "manuallyAddConfirm") {
+	dynamicPage(name: "manuallyAdd", title: "Manually add a WiLight", nextPage: "manuallyAddConfirm") {
 		section {
 			paragraph "This process will manually create a WiLight based on the entered IP address. The SmartApp needs to then communicate with the device to obtain additional information from it. Make sure the device is on and connected to your wifi network."
-            input "deviceType", "enum", title:"Device Type", description: "", required: false, options: ["Parent WiLight Device"]
-            input "ipAddress", "text", title:"IP Address", description: "", required: false 
+			input "deviceType", "enum", title:"Device Type", description: "", required: false, options: ["Parent WiLight Device"]
+			input "ipAddress", "text", title:"IP Address", description: "", required: false 
 		}
     }
 }
