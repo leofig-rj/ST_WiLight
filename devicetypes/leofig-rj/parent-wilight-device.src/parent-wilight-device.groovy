@@ -20,6 +20,8 @@ metadata {
 	definition (name: "Parent WiLight Device", namespace: "leofig-rj", author: "Leonardo Figueiro") {
 		capability "Configuration"
 		capability "Refresh"
+        capability "Health Check"
+        command "reboot"
 	}
 
 
@@ -28,7 +30,19 @@ metadata {
 	}
 
 	tiles {
-		// TODO: define your main and details tiles here
+        standardTile("refreshTile", "device.refresh", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
+            state "ok", label: "", action: "update", icon: "st.secondary.refresh", backgroundColor: "#ffffff"
+        }
+    	standardTile("reboot", "device.reboot", decoration: "flat", height: 1, width: 1, inactiveLabel: false) {
+            state "default", label:"Reboot", action:"reboot", icon:"", backgroundColor:"#ffffff"
+        }
+        valueTile("ip", "ip", width: 1, height: 1) {
+    		state "ip", label:'IP Address\r\n${currentValue}'
+		}
+        
+//        main "refreshTile"
+//        details(["ip","refreshTile","reboot"])
+		childDeviceTiles("all")
 	}
 }
 
@@ -176,31 +190,6 @@ void childSetLevel(String dni, value) {
     getAction("/command?${name}=${value}")
 }
 
-// handle commands
-def configure() {
-	log.debug "Executing 'configure()'"
-    updateDeviceNetworkID()
-//	sendEvent(name: "numberOfButtons", value: numButtons)
-}
-
-def refresh() {
-	log.debug "Executing 'refresh()'"
-	sendEthernet("refresh")
-//	sendEvent(name: "numberOfButtons", value: numButtons)
-}
-
-def installed() {
-	log.debug "Executing 'installed()'"
-    if ( device.deviceNetworkId =~ /^[A-Z0-9]{12}$/)
-    {
-    }
-    else
-    {
-        state.alertMessage = "WiLight Parent Device has not yet been fully configured. Click the 'Gear' icon, enter data for all fields, and click 'Done'"
-        runIn(2, "sendAlert")
-    }
-}
-
 private void createChildDevice(String deviceName, String deviceNumber) {
 
     if ( device.deviceNetworkId =~ /^[A-Z0-9]{12}$/)
@@ -276,6 +265,67 @@ private void createChildDevice(String deviceName, String deviceNumber) {
     }
 }
 
+private sendAlert() {
+   sendEvent(
+      descriptionText: state.alertMessage,
+	  eventType: "ALERT",
+	  name: "childDeviceCreation",
+	  value: "failed",
+	  displayed: true,
+   )
+}
+
+private boolean containsDigit(String s) {
+    boolean containsDigit = false;
+
+    if (s != null && !s.isEmpty()) {
+//		log.debug "containsDigit .matches = ${s.matches(".*\\d+.*")}"
+		containsDigit = s.matches(".*\\d+.*")
+    }
+    return containsDigit
+}
+
+// A partir daqui "irrigação"
+//Start of added functions
+
+def reset() {
+	log.debug "reset()"
+}
+
+def refresh() {
+	log.debug "refresh()"
+    
+    getAction("/status")
+}
+
+def ping() {
+    log.debug "ping()"
+    refresh()
+}
+
+def reboot() {
+	log.debug "reboot()"
+    def uri = "/reboot"
+    getAction(uri)
+}
+
+def sync(ip, port) {
+    def existingIp = getDataValue("ip")
+    def existingPort = getDataValue("port")
+    if (ip && ip != existingIp) {
+        updateDataValue("ip", ip)
+        sendEvent(name: 'ip', value: ip)
+    }
+    if (port && port != existingPort) {
+        updateDataValue("port", port)
+    }
+}
+private encodeCredentials(username, password){
+	def userpassascii = "${username}:${password}"
+    def userpass = "Basic " + userpassascii.encodeAsBase64().toString()
+    return userpass
+}
+
 private getAction(uri){ 
   updateDNI()
   def userpass
@@ -312,22 +362,166 @@ private postAction(uri, data){
   return hubAction    
 }
 
-private sendAlert() {
-   sendEvent(
-      descriptionText: state.alertMessage,
-	  eventType: "ALERT",
-	  name: "childDeviceCreation",
-	  value: "failed",
-	  displayed: true,
-   )
+private setDeviceNetworkId(ip, port = null){
+    def myDNI
+    if (port == null) {
+        myDNI = ip
+    } else {
+  	    def iphex = convertIPtoHex(ip)
+  	    def porthex = convertPortToHex(port)
+        
+        myDNI = "$iphex:$porthex"
+    }
+    log.debug "Device Network Id set to ${myDNI}"
+    return myDNI
 }
 
-private boolean containsDigit(String s) {
-    boolean containsDigit = false;
-
-    if (s != null && !s.isEmpty()) {
-//		log.debug "containsDigit .matches = ${s.matches(".*\\d+.*")}"
-		containsDigit = s.matches(".*\\d+.*")
+private updateDNI() { 
+    if (state.dni != null && state.dni != "" && device.deviceNetworkId != state.dni) {
+       device.deviceNetworkId = state.dni
     }
-    return containsDigit
+}
+
+private getHostAddress() {
+    if(getDeviceDataByName("ip") && getDeviceDataByName("port")){
+        return "${getDeviceDataByName("ip")}:${getDeviceDataByName("port")}"
+    }else{
+	    return "${ip}:80"
+    }
+}
+
+private String convertIPtoHex(ipAddress) { 
+    String hex = ipAddress.tokenize( '.' ).collect {  String.format( '%02x', it.toInteger() ) }.join()
+    return hex
+}
+
+private String convertPortToHex(port) {
+	String hexport = port.toString().format( '%04x', port.toInteger() )
+    return hexport
+}
+
+def parseDescriptionAsMap(description) {
+	description.split(",").inject([:]) { map, param ->
+		def nameAndValue = param.split(":")
+		map += [(nameAndValue[0].trim()):nameAndValue[1].trim()]
+	}
+}
+
+private getHeader(userpass = null){
+    def headers = [:]
+    headers.put("Host", getHostAddress())
+    headers.put("Content-Type", "application/x-www-form-urlencoded")
+    if (userpass != null)
+       headers.put("Authorization", userpass)
+    return headers
+}
+
+def toAscii(s){
+        StringBuilder sb = new StringBuilder();
+        String ascString = null;
+        long asciiInt;
+                for (int i = 0; i < s.length(); i++){
+                    sb.append((int)s.charAt(i));
+                    sb.append("|");
+                    char c = s.charAt(i);
+                }
+                ascString = sb.toString();
+                asciiInt = Long.parseLong(ascString);
+                return asciiInt;
+}
+
+def setProgram(value, program){
+   state."program${program}" = value
+}
+
+def hex2int(value){
+   return Integer.parseInt(value, 10)
+}
+
+def update_needed_settings()
+{
+    def cmds = []
+    
+    def isUpdateNeeded = "NO"
+    
+    cmds << getAction("/config?hubIp=${device.hub.getDataValue("localIP")}&hubPort=${device.hub.getDataValue("localSrvPortTCP")}")
+        
+    sendEvent(name:"needUpdate", value: isUpdateNeeded, displayed:false, isStateChange: true)
+    return cmds
+}
+
+// handle commands de AnyThing
+//def configure() {
+//	log.debug "Executing 'configure()'"
+//    updateDeviceNetworkID()
+//	sendEvent(name: "numberOfButtons", value: numButtons)
+//}
+
+//def refresh() {
+//	log.debug "Executing 'refresh()'"
+//	sendEthernet("refresh")
+//	sendEvent(name: "numberOfButtons", value: numButtons)
+//}
+
+//def installed() {
+//	log.debug "Executing 'installed()'"
+//    if ( device.deviceNetworkId =~ /^[A-Z0-9]{12}$/)
+//    {
+//    }
+//    else
+//    {
+//        state.alertMessage = "ST_Anything Parent Device has not yet been fully configured. Click the 'Gear' icon, enter data for all fields, and click 'Done'"
+//        runIn(2, "sendAlert")
+//    }
+//}
+
+//def initialize() {
+//	log.debug "Executing 'initialize()'"
+//    sendEvent(name: "numberOfButtons", value: numButtons)
+//}
+
+//def updated() {
+//	if (!state.updatedLastRanAt || now() >= state.updatedLastRanAt + 5000) {
+//		state.updatedLastRanAt = now()
+//		log.debug "Executing 'updated()'"
+//    	runIn(3, "updateDeviceNetworkID")
+//		sendEvent(name: "numberOfButtons", value: numButtons)
+//        log.debug "Hub IP Address = ${device.hub.getDataValue("localIP")}"
+//        log.debug "Hub Port = ${device.hub.getDataValue("localSrvPortTCP")}"
+//	}
+//	else {
+////		log.trace "updated(): Ran within last 5 seconds so aborting."
+//	}
+//}
+
+//def updateDeviceNetworkID() {
+//	log.debug "Executing 'updateDeviceNetworkID'"
+//    if(device.deviceNetworkId!=mac) {
+//    	log.debug "setting deviceNetworkID = ${mac}"
+//        device.setDeviceNetworkId("${mac}")
+//	}
+//    //Need deviceNetworkID updated BEFORE we can create Child Devices
+//	//Have the Arduino send an updated value for every device attached.  This will auto-created child devices!
+//	refresh()
+//}
+
+def installed() {
+	log.debug "installed()"
+	configure()
+}
+
+def configure() {
+    log.debug "configure()"
+    def cmds = [] 
+    cmds = update_needed_settings()
+    if (cmds != []) response(cmds)
+}
+
+def updated()
+{
+    log.debug "updated()"
+    def cmds = [] 
+    cmds = update_needed_settings()
+    sendEvent(name: "checkInterval", value: 2 * 15 * 60 + 2 * 60, displayed: false, data: [protocol: "lan", hubHardwareId: device.hub.hardwareID])
+    if (cmds != []) response(cmds)
 }
