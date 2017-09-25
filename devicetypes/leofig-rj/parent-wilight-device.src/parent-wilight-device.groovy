@@ -200,46 +200,46 @@ private void createChildDevice(String deviceName, String deviceNumber) {
 //         	    case "contact": 
 //                  deviceHandlerName = "Child Contact Sensor" 
 //                  break
-         	    case "switch": 
+                 case "switch": 
                     deviceHandlerName = "Child WiLght Switch" 
                     break
 //              case "dimmerSwitch": 
 //                  deviceHandlerName = "Child Dimmer Switch" 
 //                  break
-//         	    case "relaySwitch": 
+//              case "relaySwitch": 
 //                  deviceHandlerName = "Child Relay Switch" 
 //                  break
-//			    case "temperature": 
+//              case "temperature": 
 //                  deviceHandlerName = "Child Temperature Sensor" 
 //                  break
-//         	    case "humidity": 
+//              case "humidity": 
 //                  deviceHandlerName = "Child Humidity Sensor" 
 //                  break
-//         	    case "motion": 
+//              case "motion": 
 //                  deviceHandlerName = "Child Motion Sensor" 
 //                  break
-//         	    case "water": 
+//              case "water": 
 //                  deviceHandlerName = "Child Water Sensor" 
 //                  break
-//         	    case "illuminance": 
+//              case "illuminance": 
 //                  deviceHandlerName = "Child Illuminance Sensor" 
 //                  break
-//         	    case "illuminancergb": 
+//              case "illuminancergb": 
 //                  deviceHandlerName = "Child IlluminanceRGB Sensor" 
 //                  break
 //              case "voltage": 
 //                  deviceHandlerName = "Child Voltage Sensor" 
 //                  break
-//			    case "smoke": 
+//              case "smoke": 
 //                  deviceHandlerName = "Child Smoke Detector" 
 //                  break    
-//			    case "carbonMonoxide": 
+//              case "carbonMonoxide": 
 //                  deviceHandlerName = "Child Carbon Monoxide Detector" 
 //                  break    
-//         	    case "alarm": 
+//              case "alarm": 
 //                  deviceHandlerName = "Child Alarm" 
 //                  break    
-//         	    case "doorControl": 
+//              case "doorControl": 
 //                  deviceHandlerName = "Child Door Control" 
 //                  break
                 default: 
