@@ -430,9 +430,9 @@ def toAscii(s){
                 return asciiInt;
 }
 
-def setProgram(value, program){
-   state."program${program}" = value
-}
+//def setProgram(value, program){
+//   state."program${program}" = value
+//}
 
 def hex2int(value){
    return Integer.parseInt(value, 10)
