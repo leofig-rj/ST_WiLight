@@ -161,19 +161,19 @@ def parseChild(String nome, String value) {
 void childOn(String dni) {
     def name = dni.split("-")[-1]
     log.debug "childOn($dni), name = ${name}"
-    sendEthernet("${name} on")
+    getAction("/command?${name}=on")
 }
 
 void childOff(String dni) {
     def name = dni.split("-")[-1]
     log.debug "childOff($dni), name = ${name}"
-    sendEthernet("${name} off")
+    getAction("/command?${name}=off")
 }
 
 void childSetLevel(String dni, value) {
     def name = dni.split("-")[-1]
     log.debug "childSetLevel($dni), name = ${name}, level = ${value}"
-    sendEthernet("${name} ${value}")
+    getAction("/command?${name}=${value}")
 }
 
 // handle commands
@@ -274,6 +274,42 @@ private void createChildDevice(String deviceName, String deviceNumber) {
         state.alertMessage = "WiLight Parent Device has not yet been fully configured. Click the 'Gear' icon, enter data for all fields, and click 'Done'"
         runIn(2, "sendAlert")
     }
+}
+
+private getAction(uri){ 
+  updateDNI()
+  def userpass
+  log.debug uri
+  if(password != null && password != "") 
+    userpass = encodeCredentials("admin", password)
+    
+  def headers = getHeader(userpass)
+
+  def hubAction = new physicalgraph.device.HubAction(
+    method: "GET",
+    path: uri,
+    headers: headers
+  )
+  return hubAction    
+}
+
+private postAction(uri, data){ 
+  updateDNI()
+  
+  def userpass
+  
+  if(password != null && password != "") 
+    userpass = encodeCredentials("admin", password)
+  
+  def headers = getHeader(userpass)
+  
+  def hubAction = new physicalgraph.device.HubAction(
+    method: "POST",
+    path: uri,
+    headers: headers,
+    body: data
+  )
+  return hubAction    
 }
 
 private sendAlert() {
