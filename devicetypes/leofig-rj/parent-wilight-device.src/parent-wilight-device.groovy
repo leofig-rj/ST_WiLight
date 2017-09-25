@@ -20,8 +20,8 @@ metadata {
 	definition (name: "Parent WiLight Device", namespace: "leofig-rj", author: "Leonardo Figueiro") {
 		capability "Configuration"
 		capability "Refresh"
-        capability "Health Check"
-        command "reboot"
+		capability "Health Check"
+		command "reboot"
 	}
 
 
@@ -37,18 +37,18 @@ metadata {
             state "default", label:"Reboot", action:"reboot", icon:"", backgroundColor:"#ffffff"
         }
         valueTile("ip", "ip", width: 1, height: 1) {
-    		state "ip", label:'IP Address\r\n${currentValue}'
-		}
+            state "ip", label:'IP Address\r\n${currentValue}'
+        }
         
 //        main "refreshTile"
 //        details(["ip","refreshTile","reboot"])
-		childDeviceTiles("all")
+        childDeviceTiles("all")
 	}
 }
 
 // parse events into attributes
 def parse(String description) {
-	log.debug "Parsing '${description}'"
+    log.debug "Parsing '${description}'"
 
     def events = []
     def descMap = parseDescriptionAsMap(description)
@@ -61,9 +61,9 @@ def parse(String description) {
     //log.debug "descMap: ${descMap}"
 
     if (!state.mac || state.mac != descMap["mac"]) {
-		log.debug "Mac address of device found ${descMap["mac"]}"
+        log.debug "Mac address of device found ${descMap["mac"]}"
         updateDataValue("mac", descMap["mac"])
-	}
+    }
     
     if (state.mac != null && state.dni != state.mac) state.dni = setDeviceNetworkId(state.mac)
     if (!device.currentValue("ip") || (device.currentValue("ip") != getDataValue("ip"))) sendEvent(name: 'ip', value: getDataValue("ip"))
@@ -72,85 +72,85 @@ def parse(String description) {
 
     if (body && body != "") {
     
-    	if(body.startsWith("{") || body.startsWith("[")) {
+        if(body.startsWith("{") || body.startsWith("[")) {
    
-   			def slurper = new JsonSlurper()
-    		def jsonResult = slurper.parseText(body)
+   	        def slurper = new JsonSlurper()
+            def jsonResult = slurper.parseText(body)
 			           
             if (jsonResult.containsKey("switch1")) {
             	def value = jsonResult.switch1
                 parseChild("switch1", value)
-			}
+            }
             if (jsonResult.containsKey("switch2")) {
             	def value = jsonResult.switch2
                 parseChild("switch2", value)
-			}
+            }
             if (jsonResult.containsKey("switch3")) {
             	def value = jsonResult.switch3
                 parseChild("switch3", value)
-			}
-			if (jsonResult.containsKey("version")) {
-            	//log.debug "firmware version: $jsonResult.version"
+            }
+            if (jsonResult.containsKey("version")) {
+                //log.debug "firmware version: $jsonResult.version"
                 if (device?.currentValue("firmware") != jsonResult.version) {
-                	//log.debug "updating firmware version"
-       				sendEvent(name:"firmware", value: jsonResult.version, displayed: false)
+                    //log.debug "updating firmware version"
+       	            sendEvent(name:"firmware", value: jsonResult.version, displayed: false)
                 }
-    		}
-    	} else {
-        	//log.debug "Response is not JSON: $body"
-    	}
-  	}          
+            }
+        } else {
+            //log.debug "Response is not JSON: $body"
+        }
+    }          
 }
 
 def parseChild(String nome, String value) {
 
-		def nameparts = name.split("\\d+", 2)
-		def namebase = nameparts.length>0?nameparts[0].trim():null
+        def nameparts = name.split("\\d+", 2)
+        def namebase = nameparts.length>0?nameparts[0].trim():null
         def namenum = name.substring(namebase.length()).trim()
-		
+        
         def results = []
         
         def isChild = containsDigit(name)
-   		//log.debug "Name = ${name}, isChild = ${isChild}, namebase = ${namebase}, namenum = ${namenum}"      
+        //log.debug "Name = ${name}, isChild = ${isChild}, namebase = ${namebase}, namenum = ${namenum}"      
         //log.debug "parse() childDevices.size() =  ${childDevices.size()}"
-		
-		def childDevice = null
-		
-		try {
-		
+        
+        def childDevice = null
+        
+        try {
+        
             childDevices.each {
-				try{
-            		//log.debug "Looking for child with deviceNetworkID = ${device.deviceNetworkId}-${name} against ${it.deviceNetworkId}"
-                	if (it.deviceNetworkId == "${device.deviceNetworkId}-${name}") {
-                	childDevice = it
-                    //log.debug "Found a match!!!"
-                	}
-            	}
-            	catch (e) {
-            	//log.debug e
-            	}
-        	}
+                try{
+                    //log.debug "Looking for child with deviceNetworkID = ${device.deviceNetworkId}-${name} against ${it.deviceNetworkId}"
+                    if (it.deviceNetworkId == "${device.deviceNetworkId}-${name}") {
+                        childDevice = it
+                        //log.debug "Found a match!!!"
+                    }
+                }
+                catch (e) {
+                    //log.debug e
+                }
+            }
             
             //If a child should exist, but doesn't yet, automatically add it!            
-        	if (isChild && childDevice == null) {
-        		log.debug "isChild = true, but no child found - Auto Add it!"
-            	//log.debug "    Need a ${namebase} with id = ${namenum}"
-            
-            	createChildDevice(namebase, namenum)
-            	//find child again, since it should now exist!
-            	childDevices.each {
-					try{
-            			//log.debug "Looking for child with deviceNetworkID = ${device.deviceNetworkId}-${name} against ${it.deviceNetworkId}"
-                		if (it.deviceNetworkId == "${device.deviceNetworkId}-${name}") {
-                			childDevice = it
-                    		//log.debug "Found a match!!!"
-                		}
-            		}
-            		catch (e) {
-            			//log.debug e
-            		}
-        		}
-        	}
+            if (isChild && childDevice == null) {
+                log.debug "isChild = true, but no child found - Auto Add it!"
+                //log.debug "    Need a ${namebase} with id = ${namenum}"
+                    
+                createChildDevice(namebase, namenum)
+                //find child again, since it should now exist!    
+                childDevices.each {    
+                    try{
+                        //log.debug "Looking for child with deviceNetworkID = ${device.deviceNetworkId}-${name} against ${it.deviceNetworkId}"
+                        if (it.deviceNetworkId == "${device.deviceNetworkId}-${name}") {
+                            childDevice = i    t
+                            //l    og.debug "Found a match!!!"
+                        }    
+                    }    
+                    catch (e) {
+                        //log.debug e
+                    }    
+                }
+            }
             
             if (childDevice != null) {
                 //log.debug "parse() found child device ${childDevice.deviceNetworkId}"
