@@ -34,9 +34,9 @@
 
 definition(
     name: "WiLight (Connect)",
-    namespace: "leofig",
-    author: "leonardo@wilight.com.br",
-    description: "WiLight devices.",
+    namespace: "leofig-rj",
+    author: "leofig-rj",
+    description: "Allows you to integrate your WiLight Devices with SmartThings.",
     version: "1.0.0",
     singleInstance: true,
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Meta/water_moisture.png",
