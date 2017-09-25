@@ -35,12 +35,12 @@
 definition(
     name: "WiLight (Connect)",
     namespace: "leofig-rj",
-    author: "leofig-rj",
+    author: "Leonardo Figueiro",
     description: "Allows you to integrate your WiLight Devices with SmartThings.",
-    version: "1.0.0",
-    singleInstance: true,
-    iconUrl: "https://s3.amazonaws.com/smartapp-icons/Meta/water_moisture.png",
-    iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Meta/water_moisture@2x.png"
+    category: "My Apps",
+    iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
+    iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png",
+    iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png"
 )
 
 
