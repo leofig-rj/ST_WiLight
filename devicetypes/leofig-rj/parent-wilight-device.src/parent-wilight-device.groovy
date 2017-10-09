@@ -37,10 +37,13 @@ metadata {
             state "default", label:"Reboot", action:"reboot", icon:"", backgroundColor:"#ffffff"
         }
         valueTile("ip", "ip", width: 1, height: 1) {
-            state "ip", label:'IP Address\r\n${currentValue}'
-        }
+    		state "ip", label:'IP Address\r\n${currentValue}'
+		}
+        valueTile("firmware", "firmware", width: 1, height: 1) {
+    		state "firmware", label:'Firmware ${currentValue}'
+		}
         
-//        main "refreshTile"
+        main "refreshTile"
 //        details(["ip","refreshTile","reboot"])
         childDeviceTiles("all")
 	}
