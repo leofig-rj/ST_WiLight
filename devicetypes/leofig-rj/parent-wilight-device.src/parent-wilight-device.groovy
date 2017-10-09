@@ -30,9 +30,12 @@ metadata {
 	}
 
 	tiles {
-        standardTile("refreshTile", "device.refresh", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
-            state "ok", label: "", action: "update", icon: "st.secondary.refresh", backgroundColor: "#ffffff"
-        }
+ //       standardTile("refreshTile", "device.refresh", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
+ //           state "ok", label: "", action: "update", icon: "st.secondary.refresh", backgroundColor: "#ffffff"
+ //       }
+		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
+			state "default", label:'Refresh', action: "refresh.refresh", icon: "st.secondary.refresh-icon"
+		}
 		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
 			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
 		}
@@ -46,7 +49,7 @@ metadata {
     		state "firmware", label:'Firmware ${currentValue}'
 		}
         
-        main "refreshTile"
+//        main "refreshTile"
 //        details(["ip","refreshTile","reboot"])
         childDeviceTiles("all")
 	}
