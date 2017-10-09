@@ -33,6 +33,9 @@ metadata {
         standardTile("refreshTile", "device.refresh", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
             state "ok", label: "", action: "update", icon: "st.secondary.refresh", backgroundColor: "#ffffff"
         }
+		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
+			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
+		}
     	standardTile("reboot", "device.reboot", decoration: "flat", height: 1, width: 1, inactiveLabel: false) {
             state "default", label:"Reboot", action:"reboot", icon:"", backgroundColor:"#ffffff"
         }
