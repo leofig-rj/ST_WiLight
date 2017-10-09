@@ -303,7 +303,7 @@ void deviceDescriptionHandler(physicalgraph.device.HubResponse hubResponse) {
 	log.trace "wilight.xml response (application/xml)"
 	def body = hubResponse.xml
 	//log.debug body?.device?.friendlyName?.text()
-	if (body?.device?.modelName?.text().startsWith("Parent WiLight Device")) {
+	if (body?.device?.modelName?.text().startsWith("Parent_WiLight_Device")) {
 		def devices = getDevices()
 		def device = devices.find {it?.key?.contains(body?.device?.UDN?.text())}
 		if (device) {
