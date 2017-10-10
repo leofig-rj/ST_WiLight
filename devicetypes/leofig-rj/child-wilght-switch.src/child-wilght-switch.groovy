@@ -15,7 +15,8 @@
  */
 metadata {
 	definition (name: "Child WiLght Switch", namespace: "leofig-rj", author: "Leonardo Figueiro") {
-		capability "Light"
+		capability "Switch"
+		capability "Relay Switch"
 		capability "Actuator"
 		capability "Sensor"
 
@@ -53,10 +54,12 @@ metadata {
 //}
 
 void on() {
+	log.debug "On '${device.deviceNetworkId}'"
 	parent.childOn(device.deviceNetworkId)
 }
 
 void off() {
+	log.debug "Off '${device.deviceNetworkId}'"
 	parent.childOff(device.deviceNetworkId)
 }
 

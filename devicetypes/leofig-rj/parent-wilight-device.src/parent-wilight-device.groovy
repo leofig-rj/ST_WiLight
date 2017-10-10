@@ -34,7 +34,7 @@ metadata {
  //           state "ok", label: "", action: "update", icon: "st.secondary.refresh", backgroundColor: "#ffffff"
  //       }
 		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
-			state "default", label:'Refresh', action: "refresh.refresh", icon: "st.secondary.refresh-icon"
+			state "default", label:'Refresh', action: "refresh", icon: "st.secondary.refresh-icon"
 		}
 		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
 			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
@@ -57,6 +57,7 @@ metadata {
 
 // parse events into attributes
 def parse(String description) {
+    log.debug "Parsing"
     log.debug "Parsing '${description}'"
 
     def events = []
@@ -79,6 +80,8 @@ def parse(String description) {
     
     if (descMap["body"]) body = new String(descMap["body"].decodeBase64())
 
+	log.debug "Body: ${body}"
+    
     if (body && body != "") {
     
         if(body.startsWith("{") || body.startsWith("[")) {
@@ -111,8 +114,10 @@ def parse(String description) {
     }          
 }
 
-def parseChild(String nome, String value) {
+def parseChild(String name, String value) {
 
+	log.debug "Name: ${name}"
+	log.debug "Value: ${value}"
         def nameparts = name.split("\\d+", 2)
         def namebase = nameparts.length>0?nameparts[0].trim():null
         def namenum = name.substring(namebase.length()).trim()
@@ -352,6 +357,7 @@ private postAction(uri, data){
   updateDNI()
   
   def userpass
+  log.debug uri
   
   if(password != null && password != "") 
       userpass = encodeCredentials("admin", password)
@@ -414,7 +420,8 @@ def parseDescriptionAsMap(description) {
 
 private getHeader(userpass = null){
     def headers = [:]
-    headers.put("Host", getHostAddress())
+//    headers.put("Host", getHostAddress())
+    headers.put("HOST", getHostAddress())
     headers.put("Content-Type", "application/x-www-form-urlencoded")
     if (userpass != null)
        headers.put("Authorization", userpass)
