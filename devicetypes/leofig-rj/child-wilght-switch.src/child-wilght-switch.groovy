@@ -39,32 +39,23 @@ metadata {
 				attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.switches.switch.off", backgroundColor:"#ffffff", nextState:"turningOn"
 			}
  			tileAttribute("device.lastUpdated", key: "SECONDARY_CONTROL") {
-    				attributeState("default", label:'    Last updated ${currentValue}',icon: "st.Health & Wellness.health9")
+    			attributeState("default", label:'    Last updated ${currentValue}',icon: "st.Health & Wellness.health9")
             }
 		}
 	}
 }
 
-// parse events into attributes
-//def parse(String description) {
-//	log.debug "Parsing '${description}'"
-//	// TODO: handle 'switch' attribute
-//	// TODO: handle 'lastUpdated, String' attribute
-//
-//}
-
-void on() {
+def on() {
 	log.debug "On '${device.deviceNetworkId}'"
 	parent.childOn(device.deviceNetworkId)
 }
 
-void off() {
+def off() {
 	log.debug "Off '${device.deviceNetworkId}'"
 	parent.childOff(device.deviceNetworkId)
 }
 
 def generateEvent(String name, String value) {
-	//log.debug("Passed values to routine generateEvent in device named $device: Name - $name  -  Value - $value")
 	// Update device
 	sendEvent(name: name, value: value)
    	// Update lastUpdated date and time

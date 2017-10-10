@@ -29,28 +29,23 @@ metadata {
 		// TODO: define status and reply messages here
 	}
 
-	tiles {
- //       standardTile("refreshTile", "device.refresh", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true, decoration: "flat") {
- //           state "ok", label: "", action: "update", icon: "st.secondary.refresh", backgroundColor: "#ffffff"
- //       }
-		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
+	tiles (scale: 2){
+		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", label:'Refresh', action: "refresh", icon: "st.secondary.refresh-icon"
 		}
-		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 1, height: 1) {
-			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
-		}
-    	standardTile("reboot", "device.reboot", decoration: "flat", height: 1, width: 1, inactiveLabel: false) {
-            state "default", label:"Reboot", action:"reboot", icon:"", backgroundColor:"#ffffff"
+//		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+//			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
+//		}
+    	standardTile("reboot", "device.reboot", decoration: "flat", height: 2, width: 2, inactiveLabel: false) {
+            state "default", label:"Reboot", action:"reboot", icon:"st.secondary.tools", backgroundColor:"#ffffff"
         }
-        valueTile("ip", "ip", width: 1, height: 1) {
+        valueTile("ip", "ip", width: 2, height: 2) {
     		state "ip", label:'IP Address\r\n${currentValue}'
 		}
-        valueTile("firmware", "firmware", width: 1, height: 1) {
+        valueTile("firmware", "firmware", width: 2, height: 2) {
     		state "firmware", label:'Firmware ${currentValue}'
 		}
         
-//        main "refreshTile"
-//        details(["ip","refreshTile","reboot"])
         childDeviceTiles("all")
 	}
 }
@@ -125,8 +120,6 @@ def parseChild(String name, String value) {
         def results = []
         
         def isChild = containsDigit(name)
-        //log.debug "Name = ${name}, isChild = ${isChild}, namebase = ${namebase}, namenum = ${namenum}"      
-        //log.debug "parse() childDevices.size() =  ${childDevices.size()}"
         
         def childDevice = null
         
@@ -185,21 +178,21 @@ def parseChild(String name, String value) {
     
 }
 
-void childOn(String dni) {
+def childOn(String dni) {
     def name = dni.split("-")[-1]
     log.debug "childOn($dni), name = ${name}"
 //    getAction("/command?${name}=on")
     getActionChild("/command?${name}=on")
 }
 
-void childOff(String dni) {
+def childOff(String dni) {
     def name = dni.split("-")[-1]
     log.debug "childOff($dni), name = ${name}"
 //    getAction("/command?${name}=off")
     getActionChild("/command?${name}=off")
 }
 
-void childSetLevel(String dni, value) {
+def childSetLevel(String dni, value) {
     def name = dni.split("-")[-1]
     log.debug "childSetLevel($dni), name = ${name}, level = ${value}"
 //    getAction("/command?${name}=${value}")
@@ -321,7 +314,6 @@ private boolean containsDigit(String s) {
     return containsDigit
 }
 
-// A partir daqui "irrigação"
 //Start of added functions
 
 def reset() {
@@ -467,10 +459,6 @@ def toAscii(s){
     return asciiInt;
 }
 
-//def setProgram(value, program){
-//   state."program${program}" = value
-//}
-
 def hex2int(value){
    return Integer.parseInt(value, 10)
 }
@@ -487,61 +475,6 @@ def update_needed_settings()
     return cmds
 }
 
-// handle commands de AnyThing
-//def configure() {
-//    log.debug     Executing 'configure()'"
-//    updateDevic    NetworkID()
-//    sendEvent(name: "numberOfButtons", value: numButtons)
-//}
-
-//def refresh() {
-//    log.debug "Executing 'refresh()'"
-//    sendEthernet("refresh")
-//    sendEvent(name: "numberOfButtons", value: numButtons)
-//}
-
-//def installed() {
-//    log.debug "Executing 'installed()'"
-//    if ( device.deviceNetworkId =~ /^[A-Z0-9]{12}$/)
-//    {
-//    }
-//    else
-//    {
-//        state.alertMessage = "ST_Anything Parent Device has not yet been fully configured. Click the 'Gear' icon, enter data for all fields, and click 'Done'"
-//        runIn(2, "sendAlert")
-//    }
-//}
-
-//def initialize() {
-//    log.debug "Executing 'initialize()'"
-//    sendEvent(name: "numberOfButtons", value: numButtons)
-//}
-
-//def updated() {
-//    if (!state.updatedLastRanAt || now() >= state.updatedLastRanAt + 5000) {
-//        state.updatedLastRanAt = now()
-//        log.debug "Executing 'updated()'"
-//        runIn(3, "updateDeviceNetworkID")
-//        sendEvent(name: "numberOfButtons", value: numButtons)
-//        log.debug "Hub IP Address = ${device.hub.getDataValue("localIP")}"
-//        log.debug "Hub Port = ${device.hub.getDataValue("localSrvPortTCP")}"
-//    }
-//    else {
-////        log.trace "updated(): Ran within last 5 seconds so aborting."
-//    }
-//}
-
-//def updateDeviceNetworkID() {
-//    log.debug "Executing 'updateDeviceNetworkID'"
-//    if(device.deviceNetworkId!=mac) {
-//        log.debug "setting deviceNetworkID = ${mac}"
-//        device.setDeviceNetworkId("${mac}")
-//    }
-//    //Need deviceNetworkID updated BEFORE we can create Child Devices
-//    //Have the Arduino send an updated value for every device attached.  This will auto-created child devices!
-//    refresh()
-//}
-
 def installed() {
     log.debug "installed()"
     configure()
@@ -554,8 +487,7 @@ def configure() {
     if (cmds != []) response(cmds)
 }
 
-def updated()
-{
+def updated() {
     log.debug "updated()"
     def cmds = [] 
     cmds = update_needed_settings()
