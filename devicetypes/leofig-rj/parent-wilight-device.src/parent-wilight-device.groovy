@@ -188,19 +188,44 @@ def parseChild(String name, String value) {
 void childOn(String dni) {
     def name = dni.split("-")[-1]
     log.debug "childOn($dni), name = ${name}"
-    getAction("/command?${name}=on")
+//    getAction("/command?${name}=on")
+    getActionChild("/command?${name}=on")
 }
 
 void childOff(String dni) {
     def name = dni.split("-")[-1]
     log.debug "childOff($dni), name = ${name}"
-    getAction("/command?${name}=off")
+//    getAction("/command?${name}=off")
+    getActionChild("/command?${name}=off")
 }
 
 void childSetLevel(String dni, value) {
     def name = dni.split("-")[-1]
     log.debug "childSetLevel($dni), name = ${name}, level = ${value}"
-    getAction("/command?${name}=${value}")
+//    getAction("/command?${name}=${value}")
+    getActionChild("/command?${name}=${value}")
+}
+
+private getHostAddressChild() {
+    def ip = getDataValue("ip")
+    def port = getDataValue("port")    
+    log.debug "Using ip: ${ip} and port: ${port} for device: ${device.id}"
+    return ip + ":" + port
+}
+
+def getActionChild(message) {
+    log.debug "${device.deviceNetworkId}${message}"
+	if (getDataValue("ip") != null && getDataValue("port") != null) {
+        sendHubCommand(new physicalgraph.device.HubAction(
+            method: "GET",
+            path: "${message}",
+            headers: [ HOST: "${getHostAddressChild()}" ]
+        ))
+    }
+    else {
+        state.alertMessage = "WiLight Parent Device has not yet been fully configured. Click the 'Gear' icon, enter data for all fields, and click 'Done'"
+        runIn(2, "sendAlert")   
+    }
 }
 
 private void createChildDevice(String deviceName, String deviceNumber) {
@@ -304,7 +329,7 @@ def reset() {
 }
 
 def refresh() {
-    log.debug "refresh()"
+    log.debug "refresh(${device.deviceNetworkId})"
     getAction("/status")
 }
 
@@ -330,6 +355,7 @@ def sync(ip, port) {
         updateDataValue("port", port)
     }
 }
+
 private encodeCredentials(username, password){
     def userpassascii = "${username}:${password}"
     def userpass = "Basic " + userpassascii.encodeAsBase64().toString()
@@ -340,6 +366,7 @@ private getAction(uri){
   updateDNI()
   def userpass
   log.debug uri
+  log.debug "${device.deviceNetworkId}${uri}"
   if(password != null && password != "") 
       userpass = encodeCredentials("admin", password)
     
@@ -383,7 +410,6 @@ private setDeviceNetworkId(ip, port = null){
         
         myDNI = "$iphex:$porthex"
     }
-    log.debug "Device Network Id set to ${myDNI}"
     return myDNI
 }
 
@@ -420,8 +446,7 @@ def parseDescriptionAsMap(description) {
 
 private getHeader(userpass = null){
     def headers = [:]
-//    headers.put("Host", getHostAddress())
-    headers.put("HOST", getHostAddress())
+    headers.put("Host", getHostAddress())
     headers.put("Content-Type", "application/x-www-form-urlencoded")
     if (userpass != null)
        headers.put("Authorization", userpass)
