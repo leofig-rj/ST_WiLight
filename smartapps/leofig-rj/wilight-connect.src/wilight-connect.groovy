@@ -67,7 +67,6 @@ def configurePDevice(params){
             app.updateSetting("${state.currentDeviceId}_label", getChildDevice(state.currentDeviceId).label)
             input "${state.currentDeviceId}_label", "text", title:"Device Name", description: "", required: false
             href "changeName", title:"Change Device Name", description: "Edit the name above and click here to change it", params: [did: state.currentDeviceId]
-            //href "schedulePage", title:"Configure Irrigation Schedule", description: "Click here to configure the irrigation schedule", params: [did: state.currentDeviceId]
         }
         section {
               href "deletePDevice", title:"Delete $state.currentDisplayName", description: "", params: [did: state.currentDeviceId]
@@ -81,6 +80,7 @@ def manuallyAdd(){
 			paragraph "This process will manually create a WiLight based on the entered IP address. The SmartApp needs to then communicate with the device to obtain additional information from it. Make sure the device is on and connected to your wifi network."
 			input "deviceType", "enum", title:"Device Type", description: "", required: false, options: ["Parent WiLight Device"]
 			input "ipAddress", "text", title:"IP Address", description: "", required: false 
+            input "serialNumber", "text", title:"Serial Number", description: "", required: false
 		}
 	}
 }
@@ -89,7 +89,8 @@ def manuallyAddConfirm(){
    if ( ipAddress =~ /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/) {
        log.debug "Creating WiLight with dni: ${convertIPtoHex(ipAddress)}:${convertPortToHex("80")}"
        addChildDevice("leofig-rj", deviceType ? deviceType : "Parent WiLight Device", "${convertIPtoHex(ipAddress)}:${convertPortToHex("80")}", location.hubs[0].id, [
-           "label": (deviceType ? deviceType : "WiLight ") + " (${ipAddress})",
+//           "label": (deviceType ? deviceType : "WiLight ") + " (${ipAddress})",
+           "label": "WiLight " + " (${serialNumber})",
            "data": [
            "ip": ipAddress,
            "port": "80" 
@@ -307,7 +308,8 @@ void deviceDescriptionHandler(physicalgraph.device.HubResponse hubResponse) {
 		def devices = getDevices()
 		def device = devices.find {it?.key?.contains(body?.device?.UDN?.text())}
 		if (device) {
-			device.value << [name:body?.device?.friendlyName?.text() + " (" + convertHexToIP(hubResponse.ip) + ")", serialNumber:body?.device?.serialNumber?.text(), verified: true]
+//			device.value << [name:body?.device?.friendlyName?.text() + " (" + convertHexToIP(hubResponse.ip) + ")", serialNumber:body?.device?.serialNumber?.text(), verified: true]
+			device.value << [name:"WiLight " + body?.device?.serialNumber?.text(), serialNumber:body?.device?.serialNumber?.text(), verified: true]
 		} else {
 			log.error "/wilight.xml returned a device that didn't exist"
 		}
