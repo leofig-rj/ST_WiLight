@@ -87,22 +87,31 @@ def manuallyAdd(){
 
 def manuallyAddConfirm(){
    if ( ipAddress =~ /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/) {
-       log.debug "Creating WiLight with dni: ${convertIPtoHex(ipAddress)}:${convertPortToHex("80")}"
-       addChildDevice("leofig-rj", deviceType ? deviceType : "Parent WiLight Device", "${convertIPtoHex(ipAddress)}:${convertPortToHex("80")}", location.hubs[0].id, [
-//           "label": (deviceType ? deviceType : "WiLight ") + " (${ipAddress})",
-           "label": "WiLight " + " (${serialNumber})",
-           "data": [
-           "ip": ipAddress,
-           "port": "80" 
-           ]
-       ])
-   
-       app.updateSetting("ipAddress", "")
+       if ((serialNumber.length() == 12)) {
+           log.debug "Creating WiLight with dni: ${convertIPtoHex(ipAddress)}:${convertPortToHex("80")}"
+           def numSerie = serialNumber
+           def numSerieCompacto = numSerie.substring(6)
+           addChildDevice("leofig-rj", deviceType ? deviceType : "Parent WiLight Device", "${convertIPtoHex(ipAddress)}:${convertPortToHex("80")}", location.hubs[0].id, [
+              "label": "WiLight " + numSerieCompacto,
+              "data": [
+              "ip": ipAddress,
+               "port": "80" 
+               ]
+           ])
+           
+           app.updateSetting("ipAddress", "")
             
-       dynamicPage(name: "manuallyAddConfirm", title: "Manually add a WiLight", nextPage: "mainPage") {
-          section {
-			   paragraph "The device has been added. Press next to return to the main page."
-          }
+           dynamicPage(name: "manuallyAddConfirm", title: "Manually add a WiLight", nextPage: "mainPage") {
+              section {
+			       paragraph "The device has been added. Press next to return to the main page."
+              }
+           }
+       } else {
+           dynamicPage(name: "manuallyAddConfirm", title: "Manually add a WiLight", nextPage: "mainPage") {
+               section {
+                   paragraph "The entered serial number must have 12 digits. Please try again."
+               }
+           }
        }
     } else {
         dynamicPage(name: "manuallyAddConfirm", title: "Manually add a WiLight", nextPage: "mainPage") {
@@ -303,13 +312,17 @@ def getDevices() {
 void deviceDescriptionHandler(physicalgraph.device.HubResponse hubResponse) {
 	log.trace "wilight.xml response (application/xml)"
 	def body = hubResponse.xml
-	//log.debug body?.device?.friendlyName?.text()
+	//log.debug body?.device?.serialNumber?.text()
+    def numSerie = body?.device?.serialNumber?.text()
+    def numSerieCompacto = numSerie.substring(6)
+	//log.debug numSerie
 	if (body?.device?.modelName?.text().startsWith("Parent_WiLight_Device")) {
 		def devices = getDevices()
 		def device = devices.find {it?.key?.contains(body?.device?.UDN?.text())}
 		if (device) {
 //			device.value << [name:body?.device?.friendlyName?.text() + " (" + convertHexToIP(hubResponse.ip) + ")", serialNumber:body?.device?.serialNumber?.text(), verified: true]
-			device.value << [name:"WiLight " + body?.device?.serialNumber?.text(), serialNumber:body?.device?.serialNumber?.text(), verified: true]
+//			device.value << [name:"WiLight " + body?.device?.serialNumber?.text(), serialNumber:body?.device?.serialNumber?.text(), verified: true]
+			device.value << [name:"WiLight " + numSerieCompacto, serialNumber:body?.device?.serialNumber?.text(), verified: true]
 		} else {
 			log.error "/wilight.xml returned a device that didn't exist"
 		}
