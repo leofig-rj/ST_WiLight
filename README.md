@@ -16,16 +16,16 @@ Once WiLight Parent Device is created in SmartThings, it will create as many Chi
 
 # SmartThings IDE Setup Instructions
 
-Create an account and/or log into the SmartThings Developers Web IDE.
-Click on "My Device Handlers" from the navigation menu.
-Click on "Settings" from the menu and add my GitHub Repository to your account
-Owner: leofig-rj
-Name: ST_WiLight
-Branch: master
-Click on "Update From Repo" from the menu
-Select "ST_WiLight (master)" from the list
-Select all of the Parent and Child Device Handlers
-Check the "Publish" check box and click "Execute Update"
-You should now have all of the necessary Device Handlers added to your account
+- Create an account and/or log into the SmartThings Developers Web IDE.
+- Click on "My Device Handlers" from the navigation menu.
+- Click on "Settings" from the menu and add my GitHub Repository to your account
+  - Owner: leofig-rj
+  - Name: ST_WiLight
+  - Branch: master
+- Click on "Update From Repo" from the menu
+- Select "ST_WiLight (master)" from the list
+- Select all of the Parent and Child Device Handlers
+- Check the "Publish" check box and click "Execute Update"
+- You should now have all of the necessary Device Handlers added to your account
 Note: If desired, you can still create all of the Device Handlers manually by copying and pasting code from the GitHub repository files into your ST IDE. Trust me, the Github integration in SmartThings is so much easier! And, you will know when new versions of the DHs are available based on the color of each DH in your list of Device Handlers in the IDE.
 
