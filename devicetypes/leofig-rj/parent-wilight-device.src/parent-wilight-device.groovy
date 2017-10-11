@@ -36,9 +36,9 @@ metadata {
 //		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 //			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
 //		}
-    	standardTile("reboot", "device.reboot", decoration: "flat", height: 2, width: 2, inactiveLabel: false) {
-            state "default", label:"Reboot", action:"reboot", icon:"st.secondary.tools", backgroundColor:"#ffffff"
-        }
+//    	standardTile("reboot", "device.reboot", decoration: "flat", height: 2, width: 2, inactiveLabel: false) {
+//            state "default", label:"Reboot", action:"reboot", icon:"st.secondary.tools", backgroundColor:"#ffffff"
+//      }
         valueTile("ip", "ip", width: 2, height: 2) {
     		state "ip", label:'IP Address\r\n${currentValue}'
 		}
