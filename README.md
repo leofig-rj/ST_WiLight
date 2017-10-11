@@ -28,5 +28,5 @@ Once WiLight Parent Device is created in SmartThings, it will create as many Chi
 - Check the "Publish" check box and click "Execute Update"
 - You should now have all of the necessary Device Handlers added to your account
 
-Note: If desired, you can still create all of the Device Handlers manually by copying and pasting code from the GitHub repository files into your SmartThings IDE. The Github integration in SmartThings is so much easier! And, you will know when new versions of the SmartApp and/or Device Handles are available based on the color of each item in your list of SmartApp or Device Handlers in the IDE.
+Note: If desired, you can still create all of the SmartApp and Device Handlers manually by copying and pasting code from the GitHub repository files into your SmartThings IDE. The Github integration in SmartThings is so much easier! And, you will know when new versions of the SmartApp and/or Device Handles are available based on the color of each item in your list of SmartApp or Device Handlers in the IDE.
 
