@@ -165,12 +165,12 @@ def parseChild(String name, String value) {
                 log.debug "${childDevice.deviceNetworkId} - name: ${namebase}, value: ${value}"
                 
             }
-            else  //must not be a child, perform normal update
-            {
-                results = createEvent(name: name, value: value)
-                log.debug results
-                return results
-            }
+//            else  //must not be a child, perform normal update
+//            {
+//                results = createEvent(name: name, value: value)
+//                log.debug results
+//                return results
+//            }
         }
         catch (e) {
         	log.error "Error in parse() routine, error = ${e}"
