@@ -27,6 +27,12 @@ Once WiLight Parent Device is created in SmartThings, it will create as many Chi
 - Select all of the Parent and Child Device Handlers
 - Check the "Publish" check box and click "Execute Update"
 - You should now have all of the necessary Device Handlers added to your account
+- Click on "My SmartApps" from the navigation menu.
+- Click on "Update From Repo" from the menu
+- Select "ST_WiLight (master)" from the list
+- Select WiLight (Conect) SmartApp
+- Check the "Publish" check box and click "Execute Update"
+- You should now have the necessary SmartApp added to your account
 
 Note: If desired, you can still create all of the SmartApp and Device Handlers manually by copying and pasting code from the GitHub repository files into your SmartThings IDE. The Github integration in SmartThings is so much easier! And, you will know when new versions of the SmartApp and/or Device Handles are available based on the color of each item in your list of SmartApp or Device Handlers in the IDE.
 
