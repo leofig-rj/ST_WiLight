@@ -31,7 +31,8 @@ metadata {
 
 	tiles (scale: 2){
 		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
-			state "default", label:'Refresh', action: "refresh", icon: "st.secondary.refresh-icon"
+//			state "default", label:'Refresh', action: "refresh", icon: "st.secondary.refresh-icon"
+			state "default", label:'Refresh', action: "refresh", icon: "https://github.com/leofig-rj/ST_WiLight/raw/master/icons/wilight_bw@2x.png"
 		}
 //		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 //			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
