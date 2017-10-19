@@ -31,8 +31,7 @@ metadata {
 
 	tiles (scale: 2){
 		standardTile("refresh", "device.refresh", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
-//			state "default", label:'Refresh', action: "refresh", icon: "st.secondary.refresh-icon"
-			state "default", label:'Refresh', action: "refresh", icon: "https://github.com/leofig-rj/ST_WiLight/raw/master/icons/wilight_bw@2x.png"
+			state "default", label:'Refresh', action: "refresh", icon: "st.secondary.refresh-icon"
 		}
 //		standardTile("configure", "device.configure", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 //			state "configure", label:'Configure', action:"configuration.configure", icon:"st.secondary.tools"
@@ -166,12 +165,12 @@ def parseChild(String name, String value) {
                 log.debug "${childDevice.deviceNetworkId} - name: ${namebase}, value: ${value}"
                 
             }
-//            else  //must not be a child, perform normal update
-//            {
-//                results = createEvent(name: name, value: value)
-//                log.debug results
-//                return results
-//            }
+            else  //must not be a child, perform normal update
+            {
+                results = createEvent(name: name, value: value)
+                log.debug results
+                return results
+            }
         }
         catch (e) {
         	log.error "Error in parse() routine, error = ${e}"
@@ -280,8 +279,9 @@ private void createChildDevice(String deviceName, String deviceNumber) {
       	    }
             if (deviceHandlerName != "") {
                 addChildDevice(deviceHandlerName, "${device.deviceNetworkId}-${deviceName}${deviceNumber}", null,
-		      	    [completedSetup: true, label: "${device.displayName} (${deviceName}${deviceNumber})", 
-                    isComponent: false, componentName: "${deviceName}${deviceNumber}", componentLabel: "${deviceName} ${deviceNumber}"])
+//		      	    [completedSetup: true, label: "${device.displayName} (${deviceName}${deviceNumber})", 
+		      	    [completedSetup: true, label: "${device.displayName}-${deviceName}${deviceNumber}", 
+                    isComponent: false, componentName: "${deviceName}${deviceNumber}", componentLabel: "${deviceName}${deviceNumber}"])
             }   
         } catch (e) {
             log.error "Child device creation failed with error = ${e}"
