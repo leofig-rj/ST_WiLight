@@ -97,6 +97,18 @@ def parse(String description) {
             	def value = jsonResult.switch3
                 parseChild("switch3", value)
             }
+            if (jsonResult.containsKey("dimmerSwitch1")) {
+            	def value = jsonResult.dimmerSwitch1
+                parseChild("dimmerSwitch1", value)
+            }
+            if (jsonResult.containsKey("dimmerSwitch2")) {
+            	def value = jsonResult.dimmerSwitch2
+                parseChild("dimmerSwitch2", value)
+            }
+            if (jsonResult.containsKey("dimmerSwitch3")) {
+            	def value = jsonResult.dimmerSwitch3
+                parseChild("dimmerSwitch3", value)
+            }
             if (jsonResult.containsKey("version")) {
                 //log.debug "firmware version: $jsonResult.version"
                 if (device?.currentValue("firmware") != jsonResult.version) {
@@ -236,9 +248,9 @@ private void createChildDevice(String deviceName, String deviceNumber) {
                 case "switch": 
                     deviceHandlerName = "Child WiLght Switch" 
                     break
-//                case "dimmerSwitch": 
-//                    deviceHandlerName = "Child Dimmer Switch" 
-//                    break
+                case "dimmerSwitch": 
+                    deviceHandlerName = "Child WiLght Dimmer Switch" 
+                    break
 //                case "relaySwitch": 
 //                    deviceHandlerName = "Child Relay Switch" 
 //                    break
