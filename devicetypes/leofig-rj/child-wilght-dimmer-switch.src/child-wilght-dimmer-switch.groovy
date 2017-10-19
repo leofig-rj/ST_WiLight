@@ -1,5 +1,5 @@
 /**
- *  Child WiLght Switch
+ *  Child WiLght Dimmer Switch
  *
  *  Copyright 2017 Leonardo Figueiro
  *
@@ -14,7 +14,8 @@
  *
  */
 metadata {
-    definition (name: "Child WiLght Switch", namespace: "leofig-rj", author: "Leonardo Figueiro") {
+    definition (name: "Child WiLght Dimmer Switch", namespace: "leofig-rj", author: "Leonardo Figueiro") {
+        capability "Switch Level"
         capability "Switch"
         capability "Relay Switch"
         capability "Actuator"
@@ -38,13 +39,24 @@ metadata {
                 attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.Lighting.light13", backgroundColor:"#00A0DC", nextState:"turningOff"
                 attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.Lighting.light13", backgroundColor:"#ffffff", nextState:"turningOn"
             }
-            tileAttribute("device.lastUpdated", key: "SECONDARY_CONTROL") {
-                attributeState("default", label:'    Last updated ${currentValue}',icon: "st.Health & Wellness.health9")
+                tileAttribute ("device.level", key: "SLIDER_CONTROL") {
+                attributeState "level", action:"switch level.setLevel"
             }
         }
+        
+        valueTile("level", "device.level", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+            state "level", label:'${currentValue} %', unit:"%", backgroundColor:"#ffffff"
+        }
+        valueTile("lastUpdated", "device.lastUpdated", inactiveLabel: false, decoration: "flat", width: 4, height: 2) {
+            state "default", label:'Last Updated ${currentValue}', backgroundColor:"#ffffff"
+        }
+        
+        main(["switch"])
+        details(["switch", "level", "lastUpdated"])       
     }
 }
 
+// handle commands
 def on() {
     log.debug "On '${device.deviceNetworkId}'"
     parent.childOn(device.deviceNetworkId)
@@ -53,6 +65,20 @@ def on() {
 def off() {
     log.debug "Off '${device.deviceNetworkId}'"
     parent.childOff(device.deviceNetworkId)
+}
+
+def setLevel() {
+    log.debug "setLevel >> value: $value"
+    def valueaux = value as Integer
+    def level = Math.max(Math.min(valueaux, 99), 0)
+    if (level > 0) {
+        sendEvent(name: "switch", value: "on")
+    } else {
+        sendEvent(name: "switch", value: "off")
+    }
+    sendEvent(name: "level", value: level, unit: "%")
+    
+    parent.childSetLevel(device.deviceNetworkId, level)
 }
 
 def generateEvent(String name, String value) {
