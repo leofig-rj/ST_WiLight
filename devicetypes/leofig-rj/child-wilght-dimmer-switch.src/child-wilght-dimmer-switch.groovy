@@ -67,7 +67,7 @@ def off() {
     parent.childOff(device.deviceNetworkId)
 }
 
-def setLevel() {
+def setLevel(value) {
     log.debug "setLevel >> value: $value"
     def valueaux = value as Integer
     def level = Math.max(Math.min(valueaux, 99), 0)
@@ -89,7 +89,7 @@ def generateEvent(String name, String value) {
     def parts = value.split(" ")
     def state = parts.length>0?parts[0].trim():null
     def level = parts.length>1?parts[1].trim():null
-    sendEvent(name: "switch", value: value)
+    sendEvent(name: "switch", value: state)
     sendEvent(name: "level", value: level, unit: "%")
    	// Update lastUpdated date and time
     def nowDay = new Date().format("MMM dd", location.timeZone)
