@@ -86,7 +86,7 @@ def generateEvent(String name, String value) {
     // The name coming in from WiLight will be "dimmerSwitch", but we want to the ST standard attribute for compatibility with normal SmartApps
     // The value coming in from WiLight will be on/off,level, so we will create two events one for switch and other to level
     log.debug "Parsing: $value"
-    def parts = value.split(",")
+    def parts = value.split(" ")
     def state = parts.length>0?parts[0].trim():null
     def level = parts.length>1?parts[1].trim():null
     sendEvent(name: "switch", value: value)
