@@ -70,7 +70,7 @@ def off() {
 def setLevel(value) {
     log.debug "setLevel >> value: $value"
     def valueaux = value as Integer
-    def level = Math.max(Math.min(valueaux, 99), 0)
+    def level = Math.max(Math.min(valueaux, 100), 0)
     if (level > 0) {
         sendEvent(name: "switch", value: "on")
     } else {
