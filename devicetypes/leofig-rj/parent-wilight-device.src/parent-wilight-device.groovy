@@ -336,7 +336,8 @@ def reset() {
 
 def refresh() {
     log.debug "refresh(${device.deviceNetworkId})"
-    getAction("/status")
+//    getAction("/status")
+    getActionChild("/status")
 }
 
 def ping() {
