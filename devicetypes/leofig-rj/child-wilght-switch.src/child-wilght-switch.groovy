@@ -35,8 +35,8 @@ metadata {
             tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
                 attributeState "off", label: '${name}', action: "switch.on", icon: "st.Lighting.light13", backgroundColor: "#ffffff", nextState:"turningOn"
                 attributeState "on", label: '${name}', action: "switch.off", icon: "st.Lighting.light13", backgroundColor: "#00A0DC", nextState:"turningOff"
-                attributeState "turningOn", label:'${name}', action:"switch.on", icon:"st.Lighting.light13", backgroundColor:"#00A0DC", nextState:"turningOff"
-                attributeState "turningOff", label:'${name}', action:"switch.off", icon:"st.Lighting.light13", backgroundColor:"#ffffff", nextState:"turningOn"
+                attributeState "turningOn", label:'${name}', action:"switch.off", icon:"st.Lighting.light13", backgroundColor:"#00A0DC", nextState:"turningOff"
+                attributeState "turningOff", label:'${name}', action:"switch.on", icon:"st.Lighting.light13", backgroundColor:"#ffffff", nextState:"turningOn"
             }
             tileAttribute("device.lastUpdated", key: "SECONDARY_CONTROL") {
                 attributeState("default", label:'    Last updated ${currentValue}',icon: "st.Health & Wellness.health9")
