@@ -109,6 +109,10 @@ def parse(String description) {
             	def value = jsonResult.dimmerSwitch3
                 parseChild("dimmerSwitch3", value)
             }
+            if (jsonResult.containsKey("windowShade1")) {
+            	def value = jsonResult.windowShade1
+                parseChild("windowShade1", value)
+            }
             if (jsonResult.containsKey("version")) {
                 //log.debug "firmware version: $jsonResult.version"
                 if (device?.currentValue("firmware") != jsonResult.version) {
@@ -205,6 +209,27 @@ def childOff(String dni) {
     getActionChild("/command?${name}=off")
 }
 
+def childOpen(String dni) {
+    def name = dni.split("-")[-1]
+    log.debug "childOpen($dni), name = ${name}"
+//    getAction("/command?${name}=open")
+    getActionChild("/command?${name}=open")
+}
+
+def childClose(String dni) {
+    def name = dni.split("-")[-1]
+    log.debug "childClose($dni), name = ${name}"
+//    getAction("/command?${name}=close")
+    getActionChild("/command?${name}=close")
+}
+
+def childStop(String dni) {
+    def name = dni.split("-")[-1]
+    log.debug "childStop($dni), name = ${name}"
+//    getAction("/command?${name}=stop")
+    getActionChild("/command?${name}=stop")
+}
+
 def childSetLevel(String dni, value) {
     def name = dni.split("-")[-1]
     log.debug "childSetLevel($dni), name = ${name}, level = ${value}"
@@ -287,6 +312,9 @@ private void createChildDevice(String deviceName, String deviceNumber) {
 //                case "doorControl": 
 //                    deviceHandlerName = "Child Door Control" 
 //                    break
+                case "windowShade": 
+                    deviceHandlerName = "Child WiLght Window Shade" 
+                    break
                 default: 
                     log.error "No Child Device Handler case for ${deviceName}"
       	    }
