@@ -15,17 +15,17 @@
  */
 metadata {
 	definition (name: "Child WiLght Window Shade", namespace: "leofig-rj", author: "Leonardo Figueiro") {
+		capability "Window Shade"
 		capability "Actuator"
 		capability "Switch"
 		capability "Switch Level"
-		capability "Window Shade"
         capability "Sensor"
 
 		attribute "stop", "string"
 
         attribute "stopStr", "string"
         
-        attribute "close/stop", "string"
+//       attribute "close/stop", "string"
         
         attribute "lastUpdated", "String"
         
