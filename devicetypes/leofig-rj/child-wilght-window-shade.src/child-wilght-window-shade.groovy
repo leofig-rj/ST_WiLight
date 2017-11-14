@@ -23,9 +23,7 @@ metadata {
 
 		attribute "stop", "string"
 
-        attribute "stopStr", "string"
-        
-//       attribute "close/stop", "string"
+        attribute "customDevice", "string"
         
         attribute "lastUpdated", "String"
         
@@ -40,6 +38,14 @@ metadata {
 	}
 
     tiles(scale: 2) {
+        standardTile("mainbutton", "device.windowShade") {
+            state("closed",  label:'${name}', action:"open", icon:"st.doors.garage.garage-closed", backgroundColor:"#bbbbdd", nextState: "opening")
+            state("open",    label:'${name}', action:"close", icon:"st.doors.garage.garage-open", backgroundColor:"#ffcc33", nextState: "closing")
+            state("partially open", label:'preset', action:"close", icon:"st.Transportation.transportation13", backgroundColor:"#ffcc33")
+            state("closing", label:'${name}', action:"stop", icon:"st.doors.garage.garage-closing", backgroundColor:"#bbbbdd")
+            state("opening", label:'${name}', action:"stop", icon:"st.doors.garage.garage-opening", backgroundColor:"#ffcc33")
+        }
+
         multiAttributeTile(name:"shade", type: "lighting", width: 6, height: 4) {
             tileAttribute("device.windowShade", key: "PRIMARY_CONTROL") {
                 attributeState("closed",  label:'${name}', action:"open", icon:"st.doors.garage.garage-closed", backgroundColor:"#bbbbdd", nextState: "opening")
@@ -53,21 +59,13 @@ metadata {
             }
         }
 
-        standardTile("switchmain", "device.windowShade") {
-            state("closed",  label:'${name}', action:"open", icon:"st.doors.garage.garage-closed", backgroundColor:"#bbbbdd", nextState: "opening")
-            state("open",    label:'${name}', action:"close", icon:"st.doors.garage.garage-open", backgroundColor:"#ffcc33", nextState: "closing")
-            state("partially open", label:'preset', action:"close", icon:"st.Transportation.transportation13", backgroundColor:"#ffcc33")
-            state("closing", label:'${name}', action:"stop", icon:"st.doors.garage.garage-closing", backgroundColor:"#bbbbdd")
-            state("opening", label:'${name}', action:"stop", icon:"st.doors.garage.garage-opening", backgroundColor:"#ffcc33")
+        standardTile("open", "device.customDevice", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
+            state("open", label:'open', action:"open", icon:"st.doors.garage.garage-opening")
         }
-
-        standardTile("on", "device.stopStr", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-            state("on", label:'open', action:"open", icon:"st.doors.garage.garage-opening")
+        standardTile("close", "device.customDevice", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
+            state("close", label:'close', action:"close", icon:"st.doors.garage.garage-closing")
         }
-        standardTile("off", "device.stopStr", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-            state("off", label:'close', action:"close", icon:"st.doors.garage.garage-closing")
-        }
-        standardTile("stop", "device.stopStr", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
+        standardTile("stop", "device.customDevice", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
             state("stop", label:'stop', action:"stop", icon:"st.Transportation.transportation13")
         }
         valueTile("level", "device.level", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
@@ -76,39 +74,30 @@ metadata {
         valueTile("lastUpdated", "device.lastUpdated", inactiveLabel: false, decoration: "flat", width: 4, height: 2) {
             state "default", label:'Last Updated ${currentValue}', backgroundColor:"#ffffff"
         }
-        controlTile("levelSliderControl", "device.level", "slider", height: 1, width: 3, inactiveLabel: false) {
-            state("level", action:"switch level.setLevel")
-        }
         
-        main(["switchmain"])
-        details(["shade", "on", "off", "stop", "level", "lastUpdated"])
+        main(["mainbutton"])
+        details(["shade", "open", "close", "stop", "level", "lastUpdated"])
     }
 }
 
 // handle commands
 def on() {
     log.debug "On '${device.deviceNetworkId}'"
-    int level = 100
-//    setLevel(level) 
     open()
 }
 
 def off() {
     log.debug "Off '${device.deviceNetworkId}'"
-    int level = 0
-//    setLevel(level)
     close()
 }
 
 def open() {
     log.debug "Open '${device.deviceNetworkId}'"
-//    on()
     parent.childOpen(device.deviceNetworkId)
 }
 
 def close() {
     log.debug "Close '${device.deviceNetworkId}'"
-//    off()
     parent.childClose(device.deviceNetworkId)
 }
 
@@ -121,7 +110,7 @@ def setLevel(value) {
     log.debug "setLevel >> value: $value"
     def valueaux = value as Integer
     def level = Math.max(Math.min(valueaux, 100), 0)
-    if (level > 0) {
+    if (level > 10) {
         sendEvent(name: "switch", value: "on")
     } else {
         sendEvent(name: "switch", value: "off")
@@ -134,7 +123,7 @@ def setLevel(value) {
 def generateEvent(String name, String value) {
     // Update device
     // The name coming in from WiLight will be "windowShade", but we want to the ST standard attribute for compatibility with normal SmartApps
-    // The value coming in from WiLight will be on/off,level, so we will create two events one for switch and other to level
+    // The value coming in from WiLight will be state,level, so we will create three events one for windowShade, one for switch and other to level
     log.debug "Parsing: $value"
     def parts = value.split(" ")
     def state = parts.length>0?parts[0].trim():null
@@ -145,7 +134,7 @@ def generateEvent(String name, String value) {
         sendEvent(name: "windowShade", value: state)
     }
     sendEvent(name: "level", value: level, unit: "%")
-    if (level > 0) {
+    if (level > 10) {
         sendEvent(name: "switch", value: "on")
     } else {
         sendEvent(name: "switch", value: "off")
