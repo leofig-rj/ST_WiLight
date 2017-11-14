@@ -27,7 +27,7 @@ metadata {
         
         attribute "lastUpdated", "String"
         
-        command "generateEvent", ["string", "string"]
+        command "continueParse", ["string", "string"]
 
         command "stop"
 	}
@@ -38,21 +38,13 @@ metadata {
 	}
 
     tiles(scale: 2) {
-        standardTile("mainbutton", "device.windowShade") {
-            state("closed",  label:'${name}', action:"open", icon:"st.doors.garage.garage-closed", backgroundColor:"#bbbbdd", nextState: "opening")
-            state("open",    label:'${name}', action:"close", icon:"st.doors.garage.garage-open", backgroundColor:"#ffcc33", nextState: "closing")
-            state("partially open", label:'preset', action:"close", icon:"st.Transportation.transportation13", backgroundColor:"#ffcc33")
-            state("closing", label:'${name}', action:"stop", icon:"st.doors.garage.garage-closing", backgroundColor:"#bbbbdd")
-            state("opening", label:'${name}', action:"stop", icon:"st.doors.garage.garage-opening", backgroundColor:"#ffcc33")
-        }
-
-        multiAttributeTile(name:"shade", type: "lighting", width: 6, height: 4) {
+        multiAttributeTile(name:"shade", type: "generic", width: 6, height: 4) {
             tileAttribute("device.windowShade", key: "PRIMARY_CONTROL") {
                 attributeState("closed",  label:'${name}', action:"open", icon:"st.doors.garage.garage-closed", backgroundColor:"#bbbbdd", nextState: "opening")
                 attributeState("open",    label:'${name}', action:"close", icon:"st.doors.garage.garage-open", backgroundColor:"#ffcc33", nextState: "closing")
-                attributeState("partially open", label:'preset', action:"close", icon:"st.Transportation.transportation13", backgroundColor:"#ffcc33")
-                attributeState("closing", label:'${name}', action:"stop", icon:"st.doors.garage.garage-closing", backgroundColor:"#bbbbdd")
-                attributeState("opening", label:'${name}', action:"stop", icon:"st.doors.garage.garage-opening", backgroundColor:"#ffcc33")
+                attributeState("partially open", label:'preset', action:"close", icon:"st.Transportation.transportation13", backgroundColor:"#ffcc33", nextState: "closing")
+                attributeState("closing", label:'${name}', action:"stop", icon:"st.doors.garage.garage-closing", backgroundColor:"#bbbbdd", nextState: "partially open")
+                attributeState("opening", label:'${name}', action:"stop", icon:"st.doors.garage.garage-opening", backgroundColor:"#ffcc33", nextState: "partially open")
             }
             tileAttribute ("device.level", key: "SLIDER_CONTROL") {
                 attributeState("level", action:"switch level.setLevel")
@@ -75,7 +67,7 @@ metadata {
             state "default", label:'Last Updated ${currentValue}', backgroundColor:"#ffffff"
         }
         
-        main(["mainbutton"])
+        main(["shade"])
         details(["shade", "open", "close", "stop", "level", "lastUpdated"])
     }
 }
@@ -120,10 +112,10 @@ def setLevel(value) {
     parent.childSetLevel(device.deviceNetworkId, level)
 }
 
-def generateEvent(String name, String value) {
+def continueParse(String name, String value) {
     // Update device
     // The name coming in from WiLight will be "windowShade", but we want to the ST standard attribute for compatibility with normal SmartApps
-    // The value coming in from WiLight will be state,level, so we will create three events one for windowShade, one for switch and other to level
+    // The value coming in from WiLight will be state,level, so we will create three events one for windowShade, one for level and other to switch
     log.debug "Parsing: $value"
     def parts = value.split(" ")
     def state = parts.length>0?parts[0].trim():null
@@ -134,7 +126,8 @@ def generateEvent(String name, String value) {
         sendEvent(name: "windowShade", value: state)
     }
     sendEvent(name: "level", value: level, unit: "%")
-    if (level > 10) {
+    def valueaux = level as Integer
+    if (valueaux > 10) {
         sendEvent(name: "switch", value: "on")
     } else {
         sendEvent(name: "switch", value: "off")

@@ -23,7 +23,7 @@ metadata {
         
         attribute "lastUpdated", "String"
         
-        command "generateEvent", ["string", "string"]
+        command "continueParse", ["string", "string"]
     }
     
     
@@ -81,7 +81,7 @@ def setLevel(value) {
     parent.childSetLevel(device.deviceNetworkId, level)
 }
 
-def generateEvent(String name, String value) {
+def continueParse(String name, String value) {
     // Update device
     // The name coming in from WiLight will be "dimmerSwitch", but we want to the ST standard attribute for compatibility with normal SmartApps
     // The value coming in from WiLight will be on/off,level, so we will create two events one for switch and other to level

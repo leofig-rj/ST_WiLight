@@ -22,7 +22,7 @@ metadata {
         
         attribute "lastUpdated", "String"
         
-        command "generateEvent", ["string", "string"]
+        command "continueParse", ["string", "string"]
     }
     
     
@@ -55,7 +55,7 @@ def off() {
     parent.childOff(device.deviceNetworkId)
 }
 
-def generateEvent(String name, String value) {
+def continueParse(String name, String value) {
     // Update device
     sendEvent(name: name, value: value)
    	// Update lastUpdated date and time

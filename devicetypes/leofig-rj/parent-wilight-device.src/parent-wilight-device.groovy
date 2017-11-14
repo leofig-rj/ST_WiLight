@@ -21,6 +21,7 @@ metadata {
 		capability "Configuration"
 		capability "Refresh"
 		capability "Health Check"
+        
 		command "reboot"
 	}
 
@@ -177,17 +178,17 @@ def parseChild(String name, String value) {
             }
             
             if (childDevice != null) {
-                //log.debug "parse() found child device ${childDevice.deviceNetworkId}"
-                childDevice.generateEvent(namebase, value)
+                //found child device - parse to child devise
+                childDevice.continueParse(namebase, value)
                 log.debug "${childDevice.deviceNetworkId} - name: ${namebase}, value: ${value}"
                 
             }
-            else  //must not be a child, perform normal update
-            {
-                results = createEvent(name: name, value: value)
-                log.debug results
-                return results
-            }
+//            else  //must not be a child, perform normal update
+//            {
+//                results = createEvent(name: name, value: value)
+//                log.debug results
+//                return results
+//            }
         }
         catch (e) {
         	log.error "Error in parse() routine, error = ${e}"
@@ -268,7 +269,7 @@ private void createChildDevice(String deviceName, String deviceNumber) {
         	def deviceHandlerName = ""
             switch (deviceName) {
 //                case "contact": 
-//                    deviceHandlerName = "Child Contact Sensor" 
+//                    deviceHandlerName = "Child WiLght Contact Sensor" 
 //                    break
                 case "switch": 
                     deviceHandlerName = "Child WiLght Switch" 
@@ -277,40 +278,40 @@ private void createChildDevice(String deviceName, String deviceNumber) {
                     deviceHandlerName = "Child WiLght Dimmer Switch" 
                     break
 //                case "relaySwitch": 
-//                    deviceHandlerName = "Child Relay Switch" 
+//                    deviceHandlerName = "Child WiLght Relay Switch" 
 //                    break
 //                case "temperature": 
-//                    deviceHandlerName = "Child Temperature Sensor" 
+//                    deviceHandlerName = "Child WiLght Temperature Sensor" 
 //                    break
 //                case "humidity": 
-//                    deviceHandlerName = "Child Humidity Sensor" 
+//                    deviceHandlerName = "Child WiLght Humidity Sensor" 
 //                    break
 //                case "motion": 
-//                    deviceHandlerName = "Child Motion Sensor" 
+//                    deviceHandlerName = "Child WiLght Motion Sensor" 
 //                    break
 //                case "water": 
-//                    deviceHandlerName = "Child Water Sensor" 
+//                    deviceHandlerName = "Child WiLght Water Sensor" 
 //                    break
 //                case "illuminance": 
-//                    deviceHandlerName = "Child Illuminance Sensor" 
+//                    deviceHandlerName = "Child WiLght Illuminance Sensor" 
 //                    break
 //                case "illuminancergb": 
-//                    deviceHandlerName = "Child IlluminanceRGB Sensor" 
+//                    deviceHandlerName = "Child WiLght IlluminanceRGB Sensor" 
 //                    break
 //                case "voltage": 
-//                    deviceHandlerName = "Child Voltage Sensor" 
+//                    deviceHandlerName = "Child WiLght Voltage Sensor" 
 //                    break
 //                case "smoke": 
-//                    deviceHandlerName = "Child Smoke Detector" 
+//                    deviceHandlerName = "Child WiLght Smoke Detector" 
 //                    break    
 //                case "carbonMonoxide": 
-//                    deviceHandlerName = "Child Carbon Monoxide Detector" 
+//                    deviceHandlerName = "Child WiLght Carbon Monoxide Detector" 
 //                    break    
 //                case "alarm": 
-//                    deviceHandlerName = "Child Alarm" 
+//                    deviceHandlerName = "Child WiLght Alarm" 
 //                    break    
 //                case "doorControl": 
-//                    deviceHandlerName = "Child Door Control" 
+//                    deviceHandlerName = "Child WiLght Door Control" 
 //                    break
                 case "windowShade": 
                     deviceHandlerName = "Child WiLght Window Shade" 
@@ -374,9 +375,9 @@ def ping() {
 }
 
 def reboot() {
-    log.debug "reboot()"
-    def uri = "/reboot"
-    getAction(uri)
+    log.debug "reboot(${device.deviceNetworkId})"
+//    getAction("/reboot")
+    getActionChild("/reboot")
 }
 
 def sync(ip, port) {
